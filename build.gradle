@@ -1,0 +1,60 @@
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'eclipse'
+
+mainClassName = 'frogmodaiEngine.Main'
+
+// In this section you declare where to find the dependencies of your project
+repositories {
+    // Use jcenter for resolving your dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    jcenter()
+    mavenCentral()
+    maven {
+      url 'https://mvnrepository.com'
+    }
+}
+
+configurations {
+    externalLibs
+}
+
+dependencies {
+    // This dependency is exported to consumers, that is to say found on their compile classpath.
+    //api 'org.apache.commons:commons-math3:3.6.1'
+
+    // This dependency is used internally, and not exposed to consumers on their own compile classpath.
+    //implementation 'com.google.guava:guava:21.0'
+
+    // Use JUnit test framework
+    //testImplementation 'junit:junit:4.12'
+    
+    implementation "net.onedaybeard.artemis:artemis-odb:2.2.0"
+    compile "net.mostlyoriginal.artemis-odb:contrib-core:2.4.0"
+    compile "net.mostlyoriginal.artemis-odb:contrib-plugin-operations:2.4.0"
+    compile "net.mostlyoriginal.artemis-odb:contrib-eventbus:2.4.0"
+    //compile "net.namekdev.entity_tracker:artemis-entity-tracker:0.4.0-SNAPSHOT"
+    implementation 'net.onedaybeard.artemis:artemis-odb-gradle-plugin:2.2.0'
+    implementation 'net.onedaybeard.artemis:artemis-odb-serializer-root:2.2.0'
+    //implementation 'net.onedaybeard.artemis:artemis-fluid-core:2.2.0'
+    
+    // https://mvnrepository.com/artifact/org.processing/core
+	implementation group: 'org.processing', name: 'core', version: '3.3.6'
+	compile group: 'org.jogamp.jogl', name: 'jogl-all-main', version: '2.3.2'
+	
+	compile group: 'com.sudoplay.joise', name: 'joise', version: '1.1.0'
+	
+	externalLibs files('lib/jsonbeans-0.9.jar')
+	
+	compile group: 'org.apache.commons', name: 'commons-pool2', version: '2.7.0'
+}
+
+jar {
+  manifest {
+    attributes(
+      'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+      'Main-Class': 'frogmodaiEngine.Main'
+    )
+  }
+  baseName = 'frogmodaiEngine'
+}
