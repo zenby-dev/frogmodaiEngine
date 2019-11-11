@@ -1,0 +1,21 @@
+11/7/19
+I want to refactor the main game loop to be initiated by player input always
+The player's inputs should each send off a chain of events that plays out an entire cycle
+When the turn manager returns to the player, the chains are ended and input is awaited to begin again
+Right now with the whole keystoke thing, it's all kinds of fucked up
+
+It's no longer making sense to me why you would want to have systems processing in the normal way....
+Or in an arbitrary order??/ aaauughe
+
+Right now all/most events are spawning off of TimeSystem???
+so everything after that is after the bulk of the action!
+
+The processing system as it is seems like it runs everything way too often
+Or maybe that means I'm using it wrong
+It seems to work for that cookie baking example
+
+
+
+
+
+

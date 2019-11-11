@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'eclipse'
 
-mainClassName = 'frogmodaiEngine.Main'
+mainClassName = 'frogmodaiEngine.FrogmodaiEngine'
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -35,7 +35,8 @@ dependencies {
     compile "net.mostlyoriginal.artemis-odb:contrib-eventbus:2.4.0"
     //compile "net.namekdev.entity_tracker:artemis-entity-tracker:0.4.0-SNAPSHOT"
     implementation 'net.onedaybeard.artemis:artemis-odb-gradle-plugin:2.2.0'
-    implementation 'net.onedaybeard.artemis:artemis-odb-serializer-root:2.2.0'
+    implementation 'net.onedaybeard.artemis:artemis-odb-serializer-json:2.2.0'
+    compile group: 'net.onedaybeard.artemis', name: 'artemis-odb-serializer', version: '2.2.0'
     //implementation 'net.onedaybeard.artemis:artemis-fluid-core:2.2.0'
     
     // https://mvnrepository.com/artifact/org.processing/core
@@ -47,13 +48,15 @@ dependencies {
 	externalLibs files('lib/jsonbeans-0.9.jar')
 	
 	compile group: 'org.apache.commons', name: 'commons-pool2', version: '2.7.0'
+	
+	implementation 'com.github.chrisvest:stormpot:2.4.1'
 }
 
 jar {
   manifest {
     attributes(
       'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
-      'Main-Class': 'frogmodaiEngine.Main'
+      'Main-Class': 'frogmodaiEngine.FrogmodaiEngine'
     )
   }
   baseName = 'frogmodaiEngine'
