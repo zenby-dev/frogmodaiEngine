@@ -82,9 +82,11 @@ public class PlayerSystem extends BaseSystem {
 	}
 	
 	@Subscribe
-	public void ActorTakeTurnListener(ActorTakeTurn event) {
+	public void ActorTakeTurnDuringListener(ActorTakeTurn.During event) {
 		if (!mIsPlayer.has(event.entity))
 			return;
+		
+		FrogmodaiEngine.logEventReceive("PlayerSystem", "ActorTakeTurn.During");
 		
 		//KeyStroke keystroke = FrogmodaiEngine.keystroke;
 		int e = event.entity;
@@ -98,6 +100,9 @@ public class PlayerSystem extends BaseSystem {
 
 		//if (keystroke != null) {
 		if (_p.keyPressed) {
+			
+			FrogmodaiEngine.logEventEmit("PlayerSystem", "MoveAttempt"); //Just fire on every key for now
+			
 			//KeyType keytype = keystroke.getKeyType();
 			boolean coded = _p.key == _p.CODED;
 			boolean moving = true;
@@ -129,8 +134,10 @@ public class PlayerSystem extends BaseSystem {
 				moving = false;
 			}
 			if (moving) {
+				
 				MOVE_COST = (int) (timedActor.speed * 1.0f); // moving should take a majority of your energy
 				//I guess just send a draw request every time the player's turn ends???
+				FrogmodaiEngine.logEventEmit("PlayerSystem", "ScreenRefreshRequest");
 				es.dispatch(new ScreenRefreshRequest());
 			}
 			
@@ -150,10 +157,11 @@ public class PlayerSystem extends BaseSystem {
 				}
 			}
 			
+			FrogmodaiEngine.logEventEmit("PlayerSystem", "PlayerTookTurn");
 			es.dispatch(new PlayerTookTurn());
 			
 			//FrogmodaiEngine.keystroke = null; // KEYSTROKES SHOULD NOT COUNT MORE THAN ONCE
-			_p.key = KeyEvent.VK_UNDEFINED;
+			//_p.key = KeyEvent.VK_UNDEFINED;
 		}
 
 		event.actionCost += MOVE_COST;
@@ -165,6 +173,8 @@ public class PlayerSystem extends BaseSystem {
 		//System.out.println(event.entity + ", " + mIsPlayer.has(event.entity) + ", " + event.neighbor + ", " + mIsPlayer.has(event.neighbor));
 		if (!mIsPlayer.has(event.entity))
 			return;
+		
+		FrogmodaiEngine.logEventReceive("PlayerSystem", "OnTouch");
 		
 		if (mIsFaction.has(event.neighbor)) {
 			IsFaction faction = mIsFaction.get(event.neighbor);

@@ -12,7 +12,8 @@ public class Tile extends Component {
 	public boolean willBeOccupied;
 	public boolean seen = false;
 	public ArrayList<Integer> entitiesHere;
-	@EntityId public int[] neighbors;
+	//@EntityId
+	public int[] neighbors;
 	public boolean cachedLOS = false;
 	//This field is going to be really important
 	//Entities shouldn't be stored at positions, they should be stored based on what Tile they're on

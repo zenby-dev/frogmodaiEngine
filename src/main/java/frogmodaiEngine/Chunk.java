@@ -96,10 +96,10 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 //		for (int y = 0; y < height; y++) {
 //			for (int x = 0; x < width; x++) {
 //				int i = XYToi(x, y);
-//				Position pos = mPosition.create(tiles[i]);
-//				Tile tile = mTile.create(tiles[i]);
-//				Char character = mChar.create(tiles[i]);
-//				ChunkAddress chunkAddress = mChunkAddress.create(tiles[i]);
+//				Position pos = mPosition.get(tiles[i]);
+//				Tile tile = mTile.get(tiles[i]);
+//				Char character = mChar.get(tiles[i]);
+//				ChunkAddress chunkAddress = mChunkAddress.get(tiles[i]);
 //				// tile.occupied = false;
 //				//tile.willBeOccupied = false;
 //				//tile.entitiesHere.clear();
@@ -111,13 +111,13 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 		int i = XYToi(x, y);
 		if (i >= tiles.length)
 			return; // TODO: ERROR
-		Tile tile = mTile.create(tiles[i]);
+		Tile tile = mTile.get(tiles[i]);
 		tile.entitiesHere.add(e);
 	}
 
 	public ArrayList<Integer> getEntitiesAtPos(int x, int y) {
 		int i = XYToi(x, y);
-		Tile tile = mTile.create(tiles[i]);
+		Tile tile = mTile.get(tiles[i]);
 		return tile.entitiesHere;
 	}
 	
@@ -282,8 +282,8 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 
 	public void floodGrabCheckTile(Position startPos, RelativePosition rel, int d, float _depth, int e, final HashMap<String, RelativePosition> list,
 			final HashMap<String, RelativePosition> touched, final ArrayList<RelativePosition> todo, Random random) {
-		Tile tile = mTile.create(e); // These tiles aren't necessarily in the same chunk
-		//ChunkAddress ca = mChunkAddress.create(e);
+		Tile tile = mTile.get(e); // These tiles aren't necessarily in the same chunk
+		//ChunkAddress ca = mChunkAddress.get(e);
 		//Chunk chunk = FrogmodaiEngine.worldManager.getChunk(ca.worldID);
 		Position tilePos = mPosition.get(e);
 
@@ -298,7 +298,7 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 		
 		//if (rel.distanceSquared(startPos) < rel.pathLength) return;
 		
-		//Char chara = mChar.create(rel.e);
+		//Char chara = mChar.get(rel.e);
 		//screen.setCharacter(rel.x, rel.y, new TextCharacter((char)(depth+48), TextColor.ANSI.RED, TextColor.ANSI.CYAN));
 		
 		// if (!FrogmodaiEngine.worldManager.getActiveChunk().LOS(rel.x, rel.y, tilePos.x,
@@ -364,7 +364,7 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 			newrel.pathLength = rel.pathLength + ((Math.abs(rel.dx) == 1 && Math.abs(rel.dy) == 1) ? (float)Math.sqrt(2.0) : 1f);
 			newrel.e = j;
 			todo.add(newrel);
-			//Char chara = mChar.create(newrel.e);
+			//Char chara = mChar.get(newrel.e);
 			//screen.setCharacter(newrel.x+10, newrel.y+10, new TextCharacter(chara.character, TextColor.ANSI.RED, TextColor.ANSI.CYAN));
 			//floodGrab(startPos, newrel, d, j, list, touched);
 		}
@@ -372,8 +372,8 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 
 	public void floodGrabOLD(Position startPos, RelativePosition rel, int d, int e, final ArrayList<RelativePosition> list,
 			final ArrayList<String> touched) {
-		Tile tile = mTile.create(e); // These tiles aren't necessarily in the same chunk
-		Position tilePos = mPosition.create(e);
+		Tile tile = mTile.get(e); // These tiles aren't necessarily in the same chunk
+		Position tilePos = mPosition.get(e);
 
 		// if (list.size() > 100) return;
 
@@ -435,7 +435,7 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 	public boolean isSolid(int i) {
 		if (i < 0 || i >= width * height)
 			return true;
-		Tile tile = mTile.create(tiles[i]);
+		Tile tile = mTile.get(tiles[i]);
 		return tile.solid;
 	}
 
@@ -443,14 +443,14 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 		int i = XYToi(x, y);
 		if (i < 0 || i >= width * height)
 			return true;
-		Tile tile = mTile.create(tiles[i]);
+		Tile tile = mTile.get(tiles[i]);
 		return tile.solid;
 	}
 
 	public boolean isOccupied(int i) {
 		if (i < 0 || i >= width * height)
 			return true;
-		Tile tile = mTile.create(tiles[i]);
+		Tile tile = mTile.get(tiles[i]);
 		return tile.occupied;
 	}
 
@@ -458,16 +458,17 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 		int i = XYToi(x, y);
 		if (i < 0 || i >= width * height)
 			return false;
-		Tile tile = mTile.create(tiles[i]);
+		Tile tile = mTile.get(tiles[i]);
 		return tile.occupied;
 	}
 
-	public void setOccupied(int x, int y, boolean o) {
+	public void updateOccupied(int x, int y) {
 		int i = XYToi(x, y);
 		if (i < 0 || i >= width * height)
 			return;
-		Tile tile = mTile.create(tiles[i]);
-		tile.occupied = o;
+		Tile tile = mTile.get(tiles[i]);
+		tile.occupied = tile.entitiesHere.size() > 0;
+		//tile.occupied = o;
 	}
 
 	private int XYToi(int x, int y) {
@@ -487,7 +488,7 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				int i = XYToi(x, y);
-				Tile localTile = mTile.create(tiles[i]);
+				Tile localTile = mTile.get(tiles[i]);
 				int c = 0;
 				for (int dy = -1; dy < 2; dy++) {
 					for (int dx = -1; dx < 2; dx++) {
@@ -501,7 +502,7 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 							if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
 								// It's within the local chunk
 								int j = XYToi(nx, ny);
-								// Tile otherTile = mTile.create(tiles[j]);
+								// Tile otherTile = mTile.get(tiles[j]);
 								localTile.neighbors[c] = tiles[j];
 							} else {
 								localTile.neighbors[c] = -1;
@@ -535,7 +536,7 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 		//if (me == -1 || them == -1) return false; //OOPS
 		if (me == -1) return false;
 		
-		Tile meTile = mTile.create(me);
+		Tile meTile = mTile.get(me);
 		
 		//meTile.neighbors[3] = them;
 		switch(a) {
@@ -555,22 +556,22 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 				int me = getTile(0, y);
 				if (chunk.posInChunk(chunk.width-1, y + alignment)) {
 					int them = chunk.getTile(chunk.width-1, y + alignment);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[3] = them;
 					//themTile.neighbors[4] = me;
 				}
 				if (chunk.posInChunk(chunk.width-1, y+1 + alignment)) {
 					int them = chunk.getTile(chunk.width-1, y+1 + alignment);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[5] = them;
 					//themTile.neighbors[2] = me;
 				}
 				if (chunk.posInChunk(chunk.width-1, y-1 + alignment)) {
 					int them = chunk.getTile(chunk.width-1, y-1 + alignment);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[0] = them;
 					//themTile.neighbors[7] = me;
 				}
@@ -580,22 +581,22 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 				int me = getTile(x, 0);
 				if (chunk.posInChunk(x + alignment, chunk.height-1)) {
 					int them = chunk.getTile(x + alignment, chunk.height-1);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[1] = them;
 					//themTile.neighbors[6] = me;
 				}
 				if (chunk.posInChunk(x+1 + alignment, chunk.height-1)) {
 					int them = chunk.getTile(x+1 + alignment, chunk.height-1);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[2] = them;
 					//themTile.neighbors[5] = me;
 				}
 				if (chunk.posInChunk(x-1 + alignment, chunk.height-1)) {
 					int them = chunk.getTile(x-1 + alignment, chunk.height-1);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[0] = them;
 					//themTile.neighbors[7] = me;
 				}
@@ -605,22 +606,22 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 				int me = getTile(width-1, y);
 				if (chunk.posInChunk(0, y + alignment)) {
 					int them = chunk.getTile(0, y + alignment);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[4] = them;
 					//themTile.neighbors[3] = me;
 				}
 				if (chunk.posInChunk(0, y+1 + alignment)) {
 					int them = chunk.getTile(0, y+1 + alignment);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[7] = them;
 					//themTile.neighbors[0] = me;
 				}
 				if (chunk.posInChunk(0, y-1 + alignment)) {
 					int them = chunk.getTile(0, y-1 + alignment);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[2] = them;
 					//themTile.neighbors[5] = me;
 				}
@@ -630,22 +631,22 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 				int me = getTile(x, height-1);
 				if (chunk.posInChunk(x + alignment, 0)) {
 					int them = chunk.getTile(x + alignment, 0);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[6] = them;
 					//themTile.neighbors[1] = me;
 				}
 				if (chunk.posInChunk(x+1 + alignment, 0)) {
 					int them = chunk.getTile(x+1 + alignment, 0);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[7] = them;
 					//themTile.neighbors[0] = me;
 				}
 				if (chunk.posInChunk(x-1 + alignment, 0)) {
 					int them = chunk.getTile(x-1 + alignment, 0);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[5] = them;
 					//themTile.neighbors[2] = me;
 				}
@@ -679,32 +680,32 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 				portalDef.tiles[i] = me;
 				if (chunk.posInChunk(dx, dy)) {
 					int them = chunk.getTile(dx, dy); //portal out
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[4] = them; //portal's rightward neighbor
 					//themTile.neighbors[3] = me; //destination's leftward neighbor
 					if (i == 0 && posInChunk(ox,oy-1)) {
 						int me2 = getTile(ox,oy-1);
-						Tile meTile2 = mTile.create(me2);
+						Tile meTile2 = mTile.get(me2);
 						meTile2.neighbors[7] = them;
 					}
 					if (i == w-1 && posInChunk(ox,oy+1)) {
 						int me2 = getTile(ox,oy+1);
-						Tile meTile2 = mTile.create(me2);
+						Tile meTile2 = mTile.get(me2);
 						meTile2.neighbors[2] = them;
 					}
 				}
 				if (chunk.posInChunk(dx, dy-1)) {
 					int them = chunk.getTile(dx, dy-1); //portal out
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[2] = them; //portal's rightward neighbor
 					//themTile.neighbors[5] = me; //destination's leftward neighbor
 				}
 				if (chunk.posInChunk(dx, dy+1)) {
 					int them = chunk.getTile(dx, dy+1); //portal out
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[7] = them; //portal's rightward neighbor
 					//themTile.neighbors[0] = me; //destination's leftward neighbor
 				}
@@ -712,8 +713,8 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 				if (wall) {
 					if (posInChunk(ox+1, oy)) {
 						int mewall = getTile(ox+1, oy);
-						Tile tile = mTile.create(mewall);
-						Char character = mChar.create(mewall);
+						Tile tile = mTile.get(mewall);
+						Char character = mChar.get(mewall);
 						tile.solid = true;
 						character.tile.character = '#';
 						character.tile.style.fgc = ColorUtils.Colors.GREY;
@@ -730,33 +731,33 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 				portalDef.tiles[i] = me;
 				if (chunk.posInChunk(dx, dy)) {
 					int them = chunk.getTile(dx, dy); //portal out
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[6] = them; //portal's downward neighbor
 					//themTile.neighbors[1] = me; //destination's upward neighbor
 					
 					if (i == 0 && posInChunk(ox-1,oy)) {
 						int me2 = getTile(ox-1,oy);
-						Tile meTile2 = mTile.create(me2);
+						Tile meTile2 = mTile.get(me2);
 						meTile2.neighbors[7] = them;
 					}
 					if (i == w-1 && posInChunk(ox+1,oy)) {
 						int me2 = getTile(ox+1,oy);
-						Tile meTile2 = mTile.create(me2);
+						Tile meTile2 = mTile.get(me2);
 						meTile2.neighbors[5] = them;
 					}
 				}
 				if (chunk.posInChunk(dx-1, dy)) {
 					int them = chunk.getTile(dx-1, dy); //portal out
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[5] = them; //portal's downward neighbor
 					//themTile.neighbors[2] = me; //destination's upward neighbor
 				}
 				if (chunk.posInChunk(dx+1, dy)) {
 					int them = chunk.getTile(dx+1, dy); //portal out
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[7] = them; //portal's downward neighbor
 					//themTile.neighbors[0] = me; //destination's upward neighbor
 				}
@@ -764,8 +765,8 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 				if (wall) {
 					if (posInChunk(ox, oy+1)) {
 						int mewall = getTile(ox, oy+1);
-						Tile tile = mTile.create(mewall);
-						Char character = mChar.create(mewall);
+						Tile tile = mTile.get(mewall);
+						Char character = mChar.get(mewall);
 						tile.solid = true;
 						character.tile.character = '#';
 						character.tile.style.fgc = ColorUtils.Colors.GREY;
@@ -782,32 +783,32 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 				portalDef.tiles[i] = me;
 				if (chunk.posInChunk(dx, dy)) {
 					int them = chunk.getTile(dx, dy); //portal out
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[3] = them; //portal's leftward neighbor
 					//themTile.neighbors[4] = me; //destination's rightward neighbor
 					if (i == 0 && posInChunk(ox,oy-1)) {
 						int me2 = getTile(ox,oy-1);
-						Tile meTile2 = mTile.create(me2);
+						Tile meTile2 = mTile.get(me2);
 						meTile2.neighbors[5] = them;
 					}
 					if (i == w-1 && posInChunk(ox,oy+1)) {
 						int me2 = getTile(ox,oy+1);
-						Tile meTile2 = mTile.create(me2);
+						Tile meTile2 = mTile.get(me2);
 						meTile2.neighbors[0] = them;
 					}
 				}
 				if (chunk.posInChunk(dx, dy-1)) {
 					int them = chunk.getTile(dx, dy-1); //portal out
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[0] = them; //portal's leftward neighbor
 					//themTile.neighbors[7] = me; //destination's rightward neighbor
 				}
 				if (chunk.posInChunk(dx, dy+1)) {
 					int them = chunk.getTile(dx, dy+1); //portal out
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[5] = them; //portal's leftward neighbor
 					//themTile.neighbors[2] = me; //destination's rightward neighbor
 				}
@@ -815,8 +816,8 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 				if (wall) {
 					if (posInChunk(ox-1, oy)) {
 						int mewall = getTile(ox-1, oy);
-						Tile tile = mTile.create(mewall);
-						Char character = mChar.create(mewall);
+						Tile tile = mTile.get(mewall);
+						Char character = mChar.get(mewall);
 						tile.solid = true;
 						character.tile.character = '#';
 						character.tile.style.fgc = ColorUtils.Colors.GREY;
@@ -833,32 +834,32 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 				portalDef.tiles[i] = me;
 				if (chunk.posInChunk(dx, dy)) {
 					int them = chunk.getTile(dx, dy); //portal out
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[1] = them; //portal's upward neighbor
 					//themTile.neighbors[6] = me; //destination's downward neighbor
 					if (i == 0 && posInChunk(ox-1,oy)) {
 						int me2 = getTile(ox-1,oy);
-						Tile meTile2 = mTile.create(me2);
+						Tile meTile2 = mTile.get(me2);
 						meTile2.neighbors[2] = them;
 					}
 					if (i == w-1 && posInChunk(ox+1,oy)) {
 						int me2 = getTile(ox+1,oy);
-						Tile meTile2 = mTile.create(me2);
+						Tile meTile2 = mTile.get(me2);
 						meTile2.neighbors[0] = them;
 					}
 				}
 				if (chunk.posInChunk(dx-1, dy)) {
 					int them = chunk.getTile(dx-1, dy); //portal out
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[0] = them; //portal's upward neighbor
 					//themTile.neighbors[7] = me; //destination's downward neighbor
 				}
 				if (chunk.posInChunk(dx+1, dy)) {
 					int them = chunk.getTile(dx+1, dy); //portal out
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[2] = them; //portal's upward neighbor
 					//themTile.neighbors[5] = me; //destination's downward neighbor
 				}
@@ -866,8 +867,8 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 				if (wall) {
 					if (posInChunk(ox, oy-1)) {
 						int mewall = getTile(ox, oy-1);
-						Tile tile = mTile.create(mewall);
-						Char character = mChar.create(mewall);
+						Tile tile = mTile.get(mewall);
+						Char character = mChar.get(mewall);
 						tile.solid = true;
 						character.tile.character = '#';
 						character.tile.style.fgc = ColorUtils.Colors.GREY;
@@ -989,22 +990,22 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 				int me = getTile(0, y1);
 				if (chunk.posInChunk(chunk.width-1, y2 + alignment)) {
 					int them = chunk.getTile(chunk.width-1, y2 + alignment);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[3] = them;
 					//themTile.neighbors[4] = me;
 				}
 				if (chunk.posInChunk(chunk.width-1, y2+1 + alignment)) {
 					int them = chunk.getTile(chunk.width-1, y2+1 + alignment);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[5] = them;
 					//themTile.neighbors[2] = me;
 				}
 				if (chunk.posInChunk(chunk.width-1, y2-1 + alignment)) {
 					int them = chunk.getTile(chunk.width-1, y2-1 + alignment);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[0] = them;
 					//themTile.neighbors[7] = me;
 				}
@@ -1016,22 +1017,22 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 				int me = getTile(x1, 0);
 				if (chunk.posInChunk(x2 + alignment, chunk.height-1)) {
 					int them = chunk.getTile(x2 + alignment, chunk.height-1);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[1] = them;
 					//themTile.neighbors[6] = me;
 				}
 				if (chunk.posInChunk(x2+1 + alignment, chunk.height-1)) {
 					int them = chunk.getTile(x2+1 + alignment, chunk.height-1);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[2] = them;
 					//themTile.neighbors[5] = me;
 				}
 				if (chunk.posInChunk(x2-1 + alignment, chunk.height-1)) {
 					int them = chunk.getTile(x2-1 + alignment, chunk.height-1);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[0] = them;
 					//themTile.neighbors[7] = me;
 				}
@@ -1043,22 +1044,22 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 				int me = getTile(width-1, y1);
 				if (chunk.posInChunk(0, y2 + alignment)) {
 					int them = chunk.getTile(0, y2 + alignment);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[4] = them;
 					//themTile.neighbors[3] = me;
 				}
 				if (chunk.posInChunk(0, y2+1 + alignment)) {
 					int them = chunk.getTile(0, y2+1 + alignment);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[7] = them;
 					//themTile.neighbors[0] = me;
 				}
 				if (chunk.posInChunk(0, y2-1 + alignment)) {
 					int them = chunk.getTile(0, y2-1 + alignment);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[2] = them;
 					//themTile.neighbors[5] = me;
 				}
@@ -1070,22 +1071,22 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 				int me = getTile(x1, height-1);
 				if (chunk.posInChunk(x2 + alignment, 0)) {
 					int them = chunk.getTile(x2 + alignment, 0);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[6] = them;
 					//themTile.neighbors[1] = me;
 				}
 				if (chunk.posInChunk(x2+1 + alignment, 0)) {
 					int them = chunk.getTile(x2+1 + alignment, 0);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[7] = them;
 					//themTile.neighbors[0] = me;
 				}
 				if (chunk.posInChunk(x2-1 + alignment, 0)) {
 					int them = chunk.getTile(x2-1 + alignment, 0);
-					Tile meTile = mTile.create(me);
-					Tile themTile = mTile.create(them);
+					Tile meTile = mTile.get(me);
+					Tile themTile = mTile.get(them);
 					meTile.neighbors[5] = them;
 					//themTile.neighbors[2] = me;
 				}
@@ -1098,7 +1099,7 @@ public class Chunk { // SHOULD NOT CONTAIN ANY GENERATION CODE
 	//UTILITY SHIT
 	public void setGroundColor(int j) {
 		for (int i = 0; i < tiles.length; i++) {
-			Char chara = mChar.create(tiles[i]);
+			Char chara = mChar.get(tiles[i]);
 			chara.tile.style.fgc = j;
 		}
 	}

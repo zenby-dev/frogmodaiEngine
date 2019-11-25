@@ -6,15 +6,19 @@ import java.util.Random;
 import java.util.function.*;
 
 import com.artemis.*;
+import com.artemis.Aspect.Builder;
 import com.artemis.io.JsonArtemisSerializer;
 import com.artemis.link.EntityLinkManager;
 import com.artemis.link.LinkAdapter;
 import com.artemis.managers.WorldSerializationManager;
+import com.artemis.utils.IntBag;
 
 import frogmodaiEngine.components.*;
 import frogmodaiEngine.events.CameraShift;
 import frogmodaiEngine.events.ChangeStat;
 import frogmodaiEngine.events.HPAtZero;
+import frogmodaiEngine.events.ProcessTurnCycle;
+import frogmodaiEngine.events.ProcessWorld;
 import frogmodaiEngine.events.ScreenRefreshRequest;
 import frogmodaiEngine.events.TurnCycle;
 import frogmodaiEngine.generators.*;
@@ -64,7 +68,8 @@ public class WorldManager {
 	void initWorld(PScreen _screen) {
 		WorldConfiguration config = new WorldConfigurationBuilder()
 				// .dependsOn(MyPlugin.class)
-				.dependsOn(EventSystem.class).dependsOn(EntityLinkManager.class).with(serialManager,
+				//.dependsOn(EntityLinkManager.class)
+				.dependsOn(EventSystem.class).with(serialManager,
 						// Setup Phase
 						new TimeSystem(),
 						// new TileRenderingSystem(_screen),
@@ -87,6 +92,10 @@ public class WorldManager {
 				.build();
 		world = new World(config);
 		world.inject(this);
+		world.inject(_p);
+		
+		//EntitySubscription subscription = world.getAspectSubscriptionManager().get(Aspect.all(ComponentY.class));
+		//IntBag entityIds = subscription.getEntities();
 
 		serialManager.setSerializer(new JsonArtemisSerializer(world));
 
@@ -94,24 +103,46 @@ public class WorldManager {
 
 		screen = _screen;
 	}
-
-	void process() {
-		// OOPS! the order this queue goes in isn't the order that entities are
-		// processed by the ECS!!!!
-		getActiveChunk().update();
+	
+	public IntBag getEntitiesFromAspect(Builder builder) {
+		EntitySubscription subscription = world.getAspectSubscriptionManager().get(builder);
+		return subscription.getEntities();
+	}
+	
+	@Subscribe
+	public void ProcessTurnCycleListener(ProcessTurnCycle event) {
+		_p.logEventReceive("WorldManager", "ProcessTurnCycle");
+		
 		TimeSystem timeSystem = world.getSystem(TimeSystem.class);
 		int actorsPerUpdate = timeSystem.getNumActors();
+		
+		FrogmodaiEngine.logEventEmit("WorldManager", String.format("TurnCycle.Before(%d)", actorsPerUpdate));
 		es.dispatch(new TurnCycle.Before());
+		
 		for (int i = 0; i < actorsPerUpdate; i++) {
 			if (!timeSystem.tick(i))
 				break;
 			timeSystem.actedCount++;
 		}
+		
 		if (timeSystem.actedCount >= actorsPerUpdate) {
 			timeSystem.actedCount = 0;
-			es.dispatch(new TurnCycle.After());
 		}
-		world.process();
+		
+		FrogmodaiEngine.logEventEmit("WorldManager", "TurnCycle.After");
+		es.dispatch(new TurnCycle.After());
+	}
+
+	@Subscribe
+	public void ProcessWorldListener(ProcessWorld event) {
+		//_p.logEventReceive("WorldManager", "ProcessWorld");
+		// OOPS! the order this queue goes in isn't the order that entities are
+		// processed by the ECS!!!!
+		//getActiveChunk().update();
+		
+		//FrogmodaiEngine.log("world.process() Begin");
+		world.process(); //This is for all non-event systems
+		//FrogmodaiEngine.log("world.process() End");
 	}
 
 	public void registerEvents(Object a) {
@@ -120,12 +151,13 @@ public class WorldManager {
 
 	public void registerAllEvents() {
 		registerEvents(this);
+		registerEvents(_p);
 		// registerEvents(uiHelper);
 		registerCoupledPortalDefListener();
 	}
 
 	void registerCoupledPortalDefListener() {
-		world.getSystem(EntityLinkManager.class).register(CoupledPortalDef.class, new LinkAdapter() {
+		/*world.getSystem(EntityLinkManager.class).register(CoupledPortalDef.class, new LinkAdapter() {
 
 			// relevant fields are injected by default
 			private ComponentMapper<CoupledPortalDef> mCoupledPortalDef;
@@ -137,7 +169,7 @@ public class WorldManager {
 				// mCoupledPortalDef.remove(sourceId);
 				FrogmodaiEngine.delete(sourceId);
 			}
-		});
+		});*/
 
 	}
 
@@ -165,6 +197,7 @@ public class WorldManager {
 	public boolean refreshNeeded() {
 		if (screenRefreshRequested) {
 			screenRefreshRequested = false;
+			_p.log("REFRESH APPROVED");
 			// System.out.println("a");
 			// world.getSystem(TileRenderingSystem.class).triggerRedraw();
 			// world.getSystem(DescriptiveTextSystem.class).triggerRedraw();
@@ -173,6 +206,7 @@ public class WorldManager {
 		if (world.getSystem(TileRenderingSystem.class).drewThisFrame
 				|| world.getSystem(DescriptiveTextSystem.class).drewThisFrame) {
 			// System.out.println("b");
+			_p.log("REFRESH APPROVED2");
 			return true;
 		}
 		return false;
@@ -301,7 +335,7 @@ public class WorldManager {
 
 	@Subscribe
 	void CameraShiftListener(CameraShift event) {
-		triggerTileRedraw();
+		//triggerTileRedraw();
 		// FrogmodaiEngine.sendMessage(event.dx + ", " + event.dy);
 	}
 

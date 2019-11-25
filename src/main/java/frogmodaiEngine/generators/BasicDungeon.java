@@ -223,7 +223,7 @@ public class BasicDungeon {
 		}
 		
 		//Add Goblins
-		int numGoblins = 1;
+		int numGoblins = 0;
 		for (int i = 0; i < numGoblins; i++) {
 			FrogmodaiEngine.worldManager.creatureBuilder.goblin(c, 1+FrogmodaiEngine.random.nextInt(c.width-2), 1+FrogmodaiEngine.random.nextInt(c.height-2));
 		}
@@ -310,13 +310,13 @@ public class BasicDungeon {
 
 		FrogmodaiEngine.worldManager.creatureBuilder.player(chunk, 3, 3);
 		FrogmodaiEngine.worldManager.setRenderingPerspective(FrogmodaiEngine.playerID);
-		FrogmodaiEngine.worldManager.creatureBuilder.camera(FrogmodaiEngine.playerID, 0, 0, 64, 32, 14);
+		FrogmodaiEngine.worldManager.creatureBuilder.camera(FrogmodaiEngine.playerID, 0, 0, 32, 32, 14);
 		int numGoblins = 0;
 		for (int i = 0; i < numGoblins; i++) {
 			FrogmodaiEngine.worldManager.creatureBuilder.goblin(chunk, r.nextInt(chunk.width), r.nextInt(chunk.height));
 		}
 
-		FrogmodaiEngine.worldManager.itemBuilder.createTest(chunk, 12, 6);
+		FrogmodaiEngine.worldManager.itemBuilder.createTest(chunk, 4, 4);
 		// itemBuilder.createTest(chunk, 12, 6);
 		// itemBuilder.createTest(chunk, 12, 6);
 

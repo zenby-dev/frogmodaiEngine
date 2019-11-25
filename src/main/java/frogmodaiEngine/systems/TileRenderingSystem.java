@@ -72,28 +72,38 @@ public class TileRenderingSystem extends BaseSystem { // This is for terrain onl
 	
 	@Override
 	protected void processSystem() {
+		drewThisFrame = false;
+		if (fullRedraw) {
+			if (_p.cameraID != -1) {
+				FrogmodaiEngine.log("TileRenderingSystem.process (backup call)");
+				process(_p.cameraID);
+			}
+		}
 	}
 	
 	@Subscribe
 	public void TileOccupationFinishedListener(TileOccupationFinished event) {
-		System.out.println("TileOccupationFinished[TileRenderingSystem]");
+		drewThisFrame = false;
+		FrogmodaiEngine.logEventReceive("TileRenderingSystem", "TileOccupationFinished");
 		if (_p.cameraID != -1) {
 			process(_p.cameraID);
 		}
+		FrogmodaiEngine.logEventEmit("TileRenderingSystem", "TileRenderingFinished");
 		es.dispatch(new TileRenderingFinished());
 	}
 
 	protected void process(int e) { // this happens with high frequency
 
-		drewThisFrame = false;
+		//drewThisFrame = false;
 
 		if (!fullRedraw)
 			return;
-		
-		System.out.println("TileRenderingSystem.process");
 
 		Position camPos = mPosition.create(e);
 		CameraWindow camWindow = mCameraWindow.create(e);
+		
+		FrogmodaiEngine.log(String.format("TileRenderingSystem.process(camWindow.focus=%d)", camWindow.focus));
+		
 		if (camWindow.focus == -1)
 			return;
 		Position focusPos = mPosition.create(camWindow.focus); // It's possible for focusPos to be from a different
@@ -135,6 +145,7 @@ public class TileRenderingSystem extends BaseSystem { // This is for terrain onl
 		fullRedraw = false;
 		drewThisFrame = true;
 
+		FrogmodaiEngine.logEventEmit("TileRenderingSystem", "PostTileRendering");
 		es.dispatch(new PostTileRendering());
 
 		// FrogmodaiEngine.worldManager.mapLoader.drawMap();
@@ -245,6 +256,9 @@ public class TileRenderingSystem extends BaseSystem { // This is for terrain onl
 		// and it should draw every character along the way, from center out
 		// to avoid retracing rays.
 		// Do findLine,
+		
+		//_p.log(String.format("%d", vision.values().size()));
+		
 		for (RelativePosition rel : vision.values()) {
 			int t = rel.e;
 			Position pos = new Position();
@@ -264,6 +278,9 @@ public class TileRenderingSystem extends BaseSystem { // This is for terrain onl
 			Position screenPos = new Position();
 			screenPos.x = pos.x - camPos.x;
 			screenPos.y = pos.y - camPos.y;
+			
+			//_p.log(String.format("%d, %d", screenPos.x, screenPos.y));
+			
 			if (screenPos.x >= 0 && screenPos.y >= 0 && screenPos.x < camWindow.width
 					&& screenPos.y < camWindow.height) { // If this tile is on screen
 				if (perspective == -1) {
@@ -297,6 +314,7 @@ public class TileRenderingSystem extends BaseSystem { // This is for terrain onl
 					if (!drawEntity(screenPos, tile, t, character)) {
 						// buffer.setCharacterAt(screenPos.x, screenPos.y,
 						// character.getTextCharacter());
+						//_p.log(String.format("(%d, %d) %c", screenPos.x, screenPos.y, character.getTextCharacter().character));
 						setCharacter(screenPos.x, screenPos.y, character.getTextCharacter());
 					}
 					tile.seen = true;
@@ -407,7 +425,7 @@ public class TileRenderingSystem extends BaseSystem { // This is for terrain onl
 	
 	private boolean drawEntity(Position pos, Tile tile, int t, Char tileChar) {
 		//System.out.println(t);
-		//if (t == 111) System.out.println("HEY " + tile.entitiesHere + ", " + tile.occupied);
+		if (t == 111) System.out.println("HEY " + tile.entitiesHere + ", " + tile.occupied);
 		if (tile.entitiesHere.size() == 0)
 			return false;
 

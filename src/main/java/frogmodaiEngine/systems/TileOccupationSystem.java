@@ -3,7 +3,9 @@ package frogmodaiEngine.systems;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Aspect.Builder;
+import com.artemis.BaseSystem;
 import com.artemis.systems.IteratingSystem;
+import com.artemis.utils.IntBag;
 
 import frogmodaiEngine.*;
 import frogmodaiEngine.components.*;
@@ -26,20 +28,23 @@ public class TileOccupationSystem extends IteratingSystem {
 	
 	EventSystem es;
 	
+	//Builder builder;
+	
 	//This system helps keep a handy list of entities refreshed on each tile
 	
 	public TileOccupationSystem() {
 		super(Aspect.all(Position.class, ChunkAddress.class).exclude(IsInContainer.class, Tile.class));
+		//builder = ;
 	}
 	
 	@Override
 	protected boolean checkProcessing() {
 		//System.out.println("checkProcessing() " + needsProcessing);
-		return needsProcessing;
+		return false;//needsProcessing;
 	}
 
-	@Override
-	protected void process(int e) {
+	//@Override
+	public void processTile(int e) {
 		Position pos = mPosition.get(e);
 		ChunkAddress chunkAddress = mChunkAddress.get(e);
 		Chunk chunk = FrogmodaiEngine.worldManager.getChunk(chunkAddress.worldID);
@@ -50,9 +55,9 @@ public class TileOccupationSystem extends IteratingSystem {
 		if (t != -1) {
 			Tile tile = mTile.get(t);
 			tile.add(e);
-			//System.out.println(e + ", " + mChar.get(e).tile.character + ", " + t + ", " + tile.entitiesHere);
+			System.out.println(e + ", " + mChar.get(e).tile.character + ", " + t + ", " + tile.entitiesHere);
 			//System.out.println(tile.entitiesHere.size());
-			if (mTimedActor.has(e)) {
+			if (mTimedActor.has(e)) { //should change to BlocksMovement component or some such
 				tile.occupied = true;
 			}
 		}
@@ -65,10 +70,15 @@ public class TileOccupationSystem extends IteratingSystem {
 	}
 	
 	@Override
+	protected void process(int e) {
+		
+	}
+	
+	@Override
 	protected void end() {
 		//System.out.println("end() " + needsProcessing);
-		needsProcessing = false;
-		es.dispatch(new TileOccupationFinished());
+		//needsProcessing = false;
+		//es.dispatch(new TileOccupationFinished());
 	}
 	
 	/*@Subscribe
@@ -81,7 +91,15 @@ public class TileOccupationSystem extends IteratingSystem {
 	
 	@Subscribe
 	void TriggerTileOccupationListener(TriggerTileOccupation event) {
-		System.out.println("TriggerTileOccupation[TileOccupation]");
-		needsProcessing = true;
+		FrogmodaiEngine.logEventReceive("TileOccupation", "TriggerTileOccupation");
+		//needsProcessing = true;
+		IntBag entities = subscription.getEntities();
+		int[] ids = entities.getData();
+		for (int i = 0, s = entities.size(); s > i; i++) {
+		     processTile(ids[i]);
+		}
+		
+		FrogmodaiEngine.logEventEmit("TileOccupation", "TileOccupationFinished");
+		es.dispatch(new TileOccupationFinished());
 	}
 }

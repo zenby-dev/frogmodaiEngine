@@ -9,7 +9,9 @@ import frogmodaiEngine.Chunk;
 import frogmodaiEngine.FrogmodaiEngine;
 import frogmodaiEngine.components.*;
 import frogmodaiEngine.events.CameraShift;
+import frogmodaiEngine.events.ScreenRefreshRequest;
 import net.mostlyoriginal.api.event.common.EventSystem;
+import net.mostlyoriginal.api.event.common.Subscribe;
 
 public class CameraMovingSystem extends IteratingSystem {
 	ComponentMapper<Position> mPosition;
@@ -68,10 +70,19 @@ public class CameraMovingSystem extends IteratingSystem {
 		camPos.x += dx;
 		camPos.y += dy;
 		
-		if (dx != 0 || dy != 0)
+		if (dx != 0 || dy != 0) {
+			FrogmodaiEngine.logEventEmit("CameraMovingSystem", "CameraShift");
 			es.dispatch(new CameraShift(dx, dy));
+		}
 			//FrogmodaiEngine.worldManager.triggerTileRedraw();
 
+	}
+	
+	@Subscribe
+	public void CameraShiftListener(CameraShift event) {
+		FrogmodaiEngine.logEventReceive("CameraMovingSystem", "CameraShift");
+		FrogmodaiEngine.logEventEmit("CameraMovingSystem", "ScreenRefreshRequest");
+		es.dispatch(new ScreenRefreshRequest());
 	}
 
 	private int focusNearEdge(int tolerance, Position focus, Position cam, CameraWindow window) {

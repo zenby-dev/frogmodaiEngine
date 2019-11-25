@@ -3,9 +3,14 @@ package frogmodaiEngine;
 import java.util.Random;
 
 import frogmodaiEngine.WorldManager;
+import frogmodaiEngine.events.PlayerKeyboardInput;
+import frogmodaiEngine.events.ProcessTurnCycle;
+import frogmodaiEngine.events.ProcessWorld;
 import frogmodaiEngine.Paragraph;
 import frogmodaiEngine.TextSegment;
 import frogmodaiEngine.systems.DescriptiveTextSystem;
+import net.mostlyoriginal.api.event.common.EventSystem;
+import net.mostlyoriginal.api.event.common.Subscribe;
 import frogmodaiEngine.ArchetypeBuilders;
 import processing.core.PApplet;
 import processing.core.PGraphics;
@@ -38,6 +43,14 @@ public class FrogmodaiEngine extends PApplet {
 	public static Random random;
 	public static int screenWidth = 64 * 2;
 	public static int screenHeight = 32;
+	
+	public float keyHeldAt = -1.0f;
+	public int keyRepeatDelay = 4;
+	public float keyRepeatLength = 0.15f;
+	public boolean keyFirstFired = false;
+	public boolean keyRepeatFired = false;
+	
+	public EventSystem es;
 
 	public void settings() {
 		size(512*2, 512, P2D);
@@ -58,16 +71,19 @@ public class FrogmodaiEngine extends PApplet {
 		
 		// Initiate the world
 		worldManager = new WorldManager(this, screen);
+		//worldManager.registerEvents(this);
 		
 		// Initiate Archetypes
 		ArchetypeBuilders.initArchetypes();
 		
 		// Load Chunks
 		worldManager.start();
+		processWorld();
+		processTurnCycle();
 
 		//mainLoop();
 
-		doRender();
+		draw();
 	}
 
 	public void draw() {
@@ -81,6 +97,16 @@ public class FrogmodaiEngine extends PApplet {
 			doRender();
 		}
 	}
+	
+	public void processWorld() { //?????????
+		//logEventEmit("FrogmodaiEngine", "ProcessWorld");
+		worldManager.ProcessWorldListener(new ProcessWorld());
+	}
+	
+	public void processTurnCycle() { //??????
+		logEventEmit("FrogmodaiEngine", "ProcessTurnCycle");
+		worldManager.ProcessTurnCycleListener(new ProcessTurnCycle());
+	}
 
 	public void renderLoop() {
 		//This is the standard loop in processing
@@ -90,7 +116,30 @@ public class FrogmodaiEngine extends PApplet {
 		
 		background(0);
 		
-		worldManager.process();
+		if (keyHeldAt > 0.0f && (seconds()-keyHeldAt > keyRepeatLength*(keyRepeatDelay+1))) {
+			keyHeldAt = seconds()-keyRepeatLength*keyRepeatDelay;
+			//log(seconds()-keyHeldAt + ", " + keyRepeatLength*keyRepeatDelay);
+			keyRepeatFired = false;
+		}
+		
+		//log(seconds()-keyHeldAt + ", " + keyRepeatLength*keyRepeatDelay + ", " + !keyRepeatFired);
+		
+		//worldManager.process();
+		if ((keyHeldAt > 0.0f && !keyFirstFired) || 
+				(keyHeldAt > 0.0f && seconds()-keyHeldAt >= keyRepeatLength*keyRepeatDelay && !keyRepeatFired)) {
+			keyFirstFired = true;
+			keyRepeatFired = true;
+			//log("boop");
+			logEventEmit("FrogmodaiEngine", "PlayerKeyboardInput");
+			es.dispatch(new PlayerKeyboardInput(key, keyCode));
+		}
+		
+		/*if (FRAME % 8 == 0) {
+			es.dispatch(new ProcessTurnCycle());
+		}*/
+		
+		processWorld();
+		//es.dispatch(new ProcessWorld()); //Constantly processed systems
 
 		// Redraw screen
 		doRedraw();
@@ -107,6 +156,13 @@ public class FrogmodaiEngine extends PApplet {
 		// image(textile.buffer,0,0);
 		// image(dither.buffer,0,0);
 		FRAME++;
+	}
+	
+	@Subscribe
+	public void PlayerKeyboardInputListener(PlayerKeyboardInput event) {
+		logEventReceive("FrogmodaiEngine", "PlayerKeyboardInput");
+		processTurnCycle();
+		//es.dispatch(new ProcessTurnCycle());
 	}
 	
 	public int terminalMouseX() {
@@ -141,7 +197,7 @@ public class FrogmodaiEngine extends PApplet {
 		// int x1 = (int) random(terminal.resX);
 		// int y1 = (int) random(terminal.resY);
 		// screen.fill(new PTextCharacter('/', randomColor(), randomColor()));
-		screen.stroke(new PTile(' ', randomColor(), randomColor()));
+		//screen.stroke(new PTile(' ', randomColor(), randomColor()));
 		// screen.print("Howdy", x0, y0);
 
 		terminal.render();
@@ -155,7 +211,17 @@ public class FrogmodaiEngine extends PApplet {
 	}
 
 	public void keyPressed() {
-		doRender();
+		//log("pressed");
+		keyHeldAt = seconds();
+		keyFirstFired = false;
+		keyRepeatFired = false;
+	}
+	
+	public void keyReleased() {
+		//log("released");
+		keyHeldAt = -1.0f;
+		keyFirstFired = false;
+		keyRepeatFired = false;
 	}
 
 	// DOING THIS FOR EASE OF PROGRAMMING BULLSHIT
@@ -177,6 +243,22 @@ public class FrogmodaiEngine extends PApplet {
 	
 	public static void delete(int e) {
 		worldManager.world.delete(e);
+	}
+	
+	public static void log(String str) {
+		System.out.println(str);
+	}
+	
+	public static void logEventEmit(String systemName, String eventName) {
+		System.out.printf("%s <<< %s\n", eventName, systemName);
+	}
+	
+	public static void logEventReceive(String systemName, String eventName) {
+		System.out.printf("%s >>> %s\n", eventName, systemName);
+	}
+	
+	public float seconds() {
+		return millis()/1000.0f;
 	}
 
 	///////////////////////////////

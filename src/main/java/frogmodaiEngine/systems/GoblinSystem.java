@@ -98,7 +98,7 @@ public class GoblinSystem extends BaseSystem {
 	}
 
 	@Subscribe
-	public void ActorTakeTurnListener(ActorTakeTurn event) {
+	public void ActorTakeTurnDuringListener(ActorTakeTurn.During event) {
 		if (!mIsGoblin.has(event.entity))
 			return;
 

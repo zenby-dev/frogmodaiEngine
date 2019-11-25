@@ -15,7 +15,11 @@ Or maybe that means I'm using it wrong
 It seems to work for that cookie baking example
 
 
+11/14/19
+Controlling the order that event subscribers get called???
+They should be structured so it doesn't matter!
 
+The player's position seems to lag behind a frame!!! what!!!
 
 
 

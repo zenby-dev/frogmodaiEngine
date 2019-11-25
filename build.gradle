@@ -33,6 +33,8 @@ dependencies {
     compile "net.mostlyoriginal.artemis-odb:contrib-core:2.4.0"
     compile "net.mostlyoriginal.artemis-odb:contrib-plugin-operations:2.4.0"
     compile "net.mostlyoriginal.artemis-odb:contrib-eventbus:2.4.0"
+    //compile "net.mostlyoriginal.artemis-odb:contrib-plugin-debug:2.5.0-SNAPSHOT"
+    
     //compile "net.namekdev.entity_tracker:artemis-entity-tracker:0.4.0-SNAPSHOT"
     implementation 'net.onedaybeard.artemis:artemis-odb-gradle-plugin:2.2.0'
     implementation 'net.onedaybeard.artemis:artemis-odb-serializer-json:2.2.0'

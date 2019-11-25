@@ -3,6 +3,7 @@ package frogmodaiEngine.systems;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
+import com.artemis.utils.IntBag;
 
 import frogmodaiEngine.Chunk;
 import frogmodaiEngine.FrogmodaiEngine;
@@ -18,7 +19,7 @@ import net.mostlyoriginal.api.event.common.Subscribe;
 public class TileOccupationClearingSystem extends IteratingSystem {
 	ComponentMapper<Tile> mTile;
 	
-	boolean needsProcessing = false;
+	//boolean needsProcessing = false;
 	
 	EventSystem es;
 	
@@ -31,27 +32,40 @@ public class TileOccupationClearingSystem extends IteratingSystem {
 	@Override
 	protected boolean checkProcessing() {
 		//System.out.println("checkProcessing() " + needsProcessing);
-		return needsProcessing;
+		//return needsProcessing;
+		return false;
 	}
 
 	@Override
 	protected void process(int e) {
+	}
+	
+	private void processTile(int e) {
 		Tile tile = mTile.get(e);
-		//System.out.println("CLEAR " + e + ", " + tile.entitiesHere.size());
+		if (tile.entitiesHere.size() > 0)
+			System.out.println("CLEAR " + e + ", " + tile.entitiesHere.size());
 		tile.clear();
 	}
 	
 	@Override
 	protected void end() {
 		//System.out.println("end() " + needsProcessing);
-		needsProcessing = false;
+		//needsProcessing = false;
 		
-		es.dispatch(new TriggerTileOccupation());
 	}
 	
 	@Subscribe
 	void TurnCycleAfterListener(TurnCycle.After event) {
-		System.out.println("TurnCycleAfter[TileOccupationClearing]");
-		needsProcessing = true;
+		FrogmodaiEngine.logEventReceive("TileOccupationClearing", "TurnCycleAfter");
+		//needsProcessing = true;
+		
+		IntBag entities = subscription.getEntities();
+		int[] ids = entities.getData();
+		for (int i = 0, s = entities.size(); s > i; i++) {
+		     processTile(ids[i]);
+		}
+		
+		FrogmodaiEngine.logEventEmit("TileOccupationClearing", "TriggerTileOccupation");
+		es.dispatch(new TriggerTileOccupation());
 	}
 }

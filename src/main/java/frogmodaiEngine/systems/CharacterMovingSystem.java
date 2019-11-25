@@ -115,13 +115,14 @@ public class CharacterMovingSystem extends BaseEntitySystem {
 			camOffset.x = camPos.x - pos.x;
 			camOffset.y = camPos.y - pos.y;
 
-			chunk.setOccupied(pos.x, pos.y, false); // IS THIS CORRECT??? what if something else is still there?? or is
+			//if (chunk.getTile(pos.x, pos.y).entitiesHere)
+			chunk.updateOccupied(pos.x, pos.y); // IS THIS CORRECT??? what if something else is still there?? or is
 													// that impossible
 			pos.x = tilePos.x;
 			pos.y = tilePos.y;
 			onTile.tile = neighbor;
 			// onTile.tile = newChunk.getTile(pos.x, pos.y);
-			newChunk.setOccupied(pos.x, pos.y, true);
+			newChunk.updateOccupied(pos.x, pos.y);
 			if (mIsPlayer.has(e)) {
 				if (!sameChunk)
 					FrogmodaiEngine.worldManager.shiftChunks(newChunk);
@@ -153,11 +154,11 @@ public class CharacterMovingSystem extends BaseEntitySystem {
 			}
 
 			// Locking in new values (if no failure!)
-			chunk.setOccupied(pos.x, pos.y, false); // update occupation per-move
+			chunk.updateOccupied(pos.x, pos.y); // update occupation per-move
 			pos.x = targetX;
 			pos.y = targetY;
 			onTile.tile = neighbor; // THIS DOES NOT WORK FOR CHANGING CHUNKS THO
-			chunk.setOccupied(pos.x, pos.y, true);
+			chunk.updateOccupied(pos.x, pos.y);
 		}
 		// }
 		// }
@@ -181,7 +182,7 @@ public class CharacterMovingSystem extends BaseEntitySystem {
 		// very specific context sensitive actions?
 		// And otherwise use standard roguelike controls or an "action" key + direction
 		// like caves of qud
-		
+		FrogmodaiEngine.logEventEmit("CharacterMovingSystem", "MoveCollision");
 		es.dispatch(new MoveCollision(e, neighbor));
 	}
 

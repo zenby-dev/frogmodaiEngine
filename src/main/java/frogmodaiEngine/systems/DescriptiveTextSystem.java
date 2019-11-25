@@ -6,6 +6,7 @@ import java.util.Deque;
 import java.util.HashMap;
 
 import com.artemis.Aspect;
+import com.artemis.BaseSystem;
 import com.artemis.Component;
 import com.artemis.ComponentMapper;
 import com.artemis.World;
@@ -23,7 +24,7 @@ import frogmodaiEngine.TextSegment;
 import frogmodaiEngine.iVec2;
 import frogmodaiEngine.components.*;
 
-public class DescriptiveTextSystem extends IteratingSystem { // This is for terrain only
+public class DescriptiveTextSystem extends BaseSystem { // This is for terrain only
 	PScreen screen;
 	@EntityId
 	public int perspective = -1;
@@ -43,7 +44,8 @@ public class DescriptiveTextSystem extends IteratingSystem { // This is for terr
 	FrogmodaiEngine _p;
 
 	public DescriptiveTextSystem(FrogmodaiEngine __p, PScreen _screen) { // Matches camera, not tiles, for performance
-		super(Aspect.all(Position.class, CameraWindow.class));
+		super();
+		//super(Aspect.all(Position.class, CameraWindow.class));
 		_p = __p;
 		
 		bufferPosition = new iVec2(FrogmodaiEngine.screenWidth / 2, 0);
@@ -71,10 +73,22 @@ public class DescriptiveTextSystem extends IteratingSystem { // This is for terr
 	public void triggerRedraw() {
 		fullRedraw = true;
 	}
-
+	
 	@Override
-	protected void process(int e) { // this happens with high frequency
+	protected void processSystem() {
 		drewThisFrame = false;
+		
+		if (fullRedraw) {
+			if (_p.cameraID != -1) {
+				FrogmodaiEngine.log("DescriptiveTextSystem.process (backup call)");
+				process(_p.cameraID);
+			}
+		}
+	}
+
+	//@Override
+	public void process(int e) { // this happens with high frequency
+		//drewThisFrame = false;
 
 		// fullRedraw = true;
 		if (fullRedraw) {

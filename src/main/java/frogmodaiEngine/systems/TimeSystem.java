@@ -9,6 +9,7 @@ import com.artemis.Aspect.Builder;
 import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
 
+import frogmodaiEngine.FrogmodaiEngine;
 import frogmodaiEngine.components.*;
 import frogmodaiEngine.events.ActorTakeTurn;
 import net.mostlyoriginal.api.event.common.EventSystem;
@@ -49,12 +50,23 @@ public class TimeSystem extends IteratingSystem {
 		TimedActor actor = mTimedActor.create(a);
 		while (actor.energy > 0 && !actor.isFrozen && !mIsDead.has(a)) {
 			currentActor = a;
-			ActorTakeTurn event = new ActorTakeTurn(a);
-			es.dispatch(event);
-			int actionCost = event.actionCost;
-			if (event.passing) actionCost = actor.energy;
+			
+			FrogmodaiEngine.logEventEmit("TimeSystem", "ActorTakeTurn.Before");
+			ActorTakeTurn.Before beforeEvent = new ActorTakeTurn.Before(a);
+			es.dispatch(beforeEvent);
+			if (beforeEvent.isCancelled()) break;
+			
+			FrogmodaiEngine.logEventEmit("TimeSystem", "ActorTakeTurn.During");
+			ActorTakeTurn.During duringEvent = new ActorTakeTurn.During(a);
+			es.dispatch(duringEvent);
+			int actionCost = duringEvent.actionCost;
+			if (duringEvent.passing) actionCost = actor.energy;
 			//int actionCost = actor.act.apply(a); // THIS WHERE ACTOR DO
 			currentActor = -1;
+			
+			FrogmodaiEngine.logEventEmit("TimeSystem", "ActorTakeTurn.After");
+			ActorTakeTurn.After afterEvent = new ActorTakeTurn.After(a);
+			es.dispatch(afterEvent);
 			
 			if (currentActorRemoved) {
 				currentActorRemoved = false;
@@ -76,7 +88,7 @@ public class TimeSystem extends IteratingSystem {
 		if (!actor.isFrozen)
 			actor.energy += actor.speed;
 		
-		queue.add(queue.pop());
+		queue.add(queue.pop()); //This actor to end of queue
 		
 		ticks++;
 		return true;
