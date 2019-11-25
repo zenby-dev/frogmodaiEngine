@@ -4,11 +4,13 @@ import com.artemis.Aspect;
 import com.artemis.Aspect.Builder;
 import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
+import com.artemis.utils.IntBag;
 
 import frogmodaiEngine.Chunk;
 import frogmodaiEngine.FrogmodaiEngine;
 import frogmodaiEngine.components.*;
 import frogmodaiEngine.events.CameraShift;
+import frogmodaiEngine.events.KeyboardInput;
 import frogmodaiEngine.events.ScreenRefreshRequest;
 import net.mostlyoriginal.api.event.common.EventSystem;
 import net.mostlyoriginal.api.event.common.Subscribe;
@@ -18,21 +20,38 @@ public class CameraMovingSystem extends IteratingSystem {
 	ComponentMapper<CameraWindow> mCameraWindow;
 	
 	EventSystem es;
+	
+	FrogmodaiEngine _p;
 
-	public CameraMovingSystem() {
+	public CameraMovingSystem(FrogmodaiEngine __p) {
 		super(Aspect.all(Position.class, CameraWindow.class));
+		_p = __p;
+	}
+	
+	@Subscribe
+	public void KeyboardInputListener(KeyboardInput event) {
+		/*IntBag entities = subscription.getEntities();
+		int[] ids = entities.getData();
+		int camera = ids[0];*/
+		int camera = _p.cameraID;
+		Position pos = mPosition.get(camera);
+		
+		if (event.key == 'h') doShift(camera, -1, 0);
+		if (event.key == 'j') doShift(camera, 0, 1);
+		if (event.key == 'k') doShift(camera, 0, -1);
+		if (event.key == 'l') doShift(camera, 1, 0);
 	}
 
 	@Override
 	protected void process(int e) {
-		Position camPos = mPosition.create(e);
-		CameraWindow camWindow = mCameraWindow.create(e);
+		Position camPos = mPosition.get(e);
+		CameraWindow camWindow = mCameraWindow.get(e);
 
 		if (camWindow.focus == -1) {
 			return;
 		}
 
-		Position focusPos = mPosition.create(camWindow.focus);
+		Position focusPos = mPosition.get(camWindow.focus);
 		//System.out.println(String.format("%d %d", focusPos.x, focusPos.y));
 
 		//int focusMove = focusNearEdge(camWindow.tolerance, focusPos, camPos, camWindow);
@@ -54,6 +73,11 @@ public class CameraMovingSystem extends IteratingSystem {
 			dy = 1;
 		}
 		
+		doShift(e, dx, dy);
+	}
+	
+	private void doShift(int e, int dx, int dy) {
+		Position camPos = mPosition.get(e);
 		Position testPos = new Position();
 		testPos.x = camPos.x + dx;
 		testPos.y = camPos.y + dy;
@@ -75,7 +99,6 @@ public class CameraMovingSystem extends IteratingSystem {
 			es.dispatch(new CameraShift(dx, dy));
 		}
 			//FrogmodaiEngine.worldManager.triggerTileRedraw();
-
 	}
 	
 	@Subscribe

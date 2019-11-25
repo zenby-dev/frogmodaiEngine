@@ -79,7 +79,7 @@ public class WorldManager {
 						new PlayerSystem(_p), new GoblinSystem(),
 
 						// Logic Phase ??? (non-event driven ie. in order)
-						new CharacterMovingSystem(), new MoveCollisionSystem(), new CameraMovingSystem(),
+						new CharacterMovingSystem(), new MoveCollisionSystem(), new CameraMovingSystem(_p),
 						new TileOccupationClearingSystem(), new TileOccupationSystem(), new PickupSystem(),
 						new DropSystem(), new ItemRelocatingSystem(), new HPSystem(), new DeathSystem1(),
 

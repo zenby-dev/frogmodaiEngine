@@ -3,7 +3,7 @@ package frogmodaiEngine;
 import java.util.Random;
 
 import frogmodaiEngine.WorldManager;
-import frogmodaiEngine.events.PlayerKeyboardInput;
+import frogmodaiEngine.events.KeyboardInput;
 import frogmodaiEngine.events.ProcessTurnCycle;
 import frogmodaiEngine.events.ProcessWorld;
 import frogmodaiEngine.Paragraph;
@@ -131,7 +131,7 @@ public class FrogmodaiEngine extends PApplet {
 			keyRepeatFired = true;
 			//log("boop");
 			logEventEmit("FrogmodaiEngine", "PlayerKeyboardInput");
-			es.dispatch(new PlayerKeyboardInput(key, keyCode));
+			es.dispatch(new KeyboardInput(key, keyCode));
 		}
 		
 		/*if (FRAME % 8 == 0) {
@@ -159,7 +159,7 @@ public class FrogmodaiEngine extends PApplet {
 	}
 	
 	@Subscribe
-	public void PlayerKeyboardInputListener(PlayerKeyboardInput event) {
+	public void PlayerKeyboardInputListener(KeyboardInput event) {
 		logEventReceive("FrogmodaiEngine", "PlayerKeyboardInput");
 		processTurnCycle();
 		//es.dispatch(new ProcessTurnCycle());
