@@ -4,6 +4,7 @@ import java.util.Random;
 
 import frogmodaiEngine.WorldManager;
 import frogmodaiEngine.events.KeyboardInput;
+import frogmodaiEngine.events.ProcessIntermediate;
 import frogmodaiEngine.events.ProcessTurnCycle;
 import frogmodaiEngine.events.ProcessWorld;
 import frogmodaiEngine.Paragraph;
@@ -103,6 +104,11 @@ public class FrogmodaiEngine extends PApplet {
 		worldManager.ProcessWorldListener(new ProcessWorld());
 	}
 	
+	public void processIntermediate() {
+		//logEventEmit("FrogmodaiEngine", "ProcessIntermediate");
+		ProcessIntermediate.run();
+	}
+	
 	public void processTurnCycle() { //??????
 		logEventEmit("FrogmodaiEngine", "ProcessTurnCycle");
 		worldManager.ProcessTurnCycleListener(new ProcessTurnCycle());
@@ -114,7 +120,7 @@ public class FrogmodaiEngine extends PApplet {
 		//It controls things that should always be updated, even between game events
 		//Like animations and shaders and other stuff
 		
-		background(0);
+		//background(0);
 		
 		if (keyHeldAt > 0.0f && (seconds()-keyHeldAt > keyRepeatLength*(keyRepeatDelay+1))) {
 			keyHeldAt = seconds()-keyRepeatLength*keyRepeatDelay;
@@ -138,7 +144,8 @@ public class FrogmodaiEngine extends PApplet {
 			es.dispatch(new ProcessTurnCycle());
 		}*/
 		
-		processWorld();
+		//processWorld();
+		processIntermediate();
 		//es.dispatch(new ProcessWorld()); //Constantly processed systems
 
 		// Redraw screen
@@ -150,6 +157,7 @@ public class FrogmodaiEngine extends PApplet {
 
 		pushMatrix();
 		scale(1);
+		tint(255, 10);
 		image(terminal.buffer, 0, 0);
 		popMatrix();
 

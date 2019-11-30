@@ -20,6 +20,7 @@ import frogmodaiEngine.PTile;
 import frogmodaiEngine.components.*;
 import frogmodaiEngine.events.CameraShift;
 import frogmodaiEngine.events.PostTileRendering;
+import frogmodaiEngine.events.ProcessIntermediate;
 import frogmodaiEngine.events.TileOccupationFinished;
 import frogmodaiEngine.events.TileRenderingFinished;
 import net.mostlyoriginal.api.event.common.EventSystem;
@@ -72,19 +73,30 @@ public class TileRenderingSystem extends BaseSystem { // This is for terrain onl
 	
 	@Override
 	protected void processSystem() {
-		drewThisFrame = false;
+		/*drewThisFrame = false;
 		if (fullRedraw) {
 			if (_p.cameraID != -1) {
 				FrogmodaiEngine.log("TileRenderingSystem.process (backup call)");
 				process(_p.cameraID);
 			}
-		}
+		}*/
 	}
 	
 	@Subscribe
 	public void TileOccupationFinishedListener(TileOccupationFinished event) {
 		drewThisFrame = false;
 		FrogmodaiEngine.logEventReceive("TileRenderingSystem", "TileOccupationFinished");
+		doCycle();
+	}
+	
+	@Subscribe
+	public void ProcessIntermediateAfterListener(ProcessIntermediate.After event) {
+		if (!fullRedraw) return;
+		FrogmodaiEngine.logEventReceive("TileRenderingSystem", "ProcessIntermediate.After");
+		doCycle();
+	}
+	
+	private void doCycle() {
 		if (_p.cameraID != -1) {
 			process(_p.cameraID);
 		}
@@ -94,7 +106,7 @@ public class TileRenderingSystem extends BaseSystem { // This is for terrain onl
 
 	protected void process(int e) { // this happens with high frequency
 
-		//drewThisFrame = false;
+		drewThisFrame = false;
 
 		if (!fullRedraw)
 			return;
@@ -160,7 +172,7 @@ public class TileRenderingSystem extends BaseSystem { // This is for terrain onl
 	}
 
 	@Subscribe
-	public void CameraShiftListener(CameraShift event) {
+	public void CameraShiftAfterListener(CameraShift.After event) {
 		// FrogmodaiEngine.sendMessage(event.dx + ", " + event.dy);
 	}
 
@@ -425,7 +437,7 @@ public class TileRenderingSystem extends BaseSystem { // This is for terrain onl
 	
 	private boolean drawEntity(Position pos, Tile tile, int t, Char tileChar) {
 		//System.out.println(t);
-		if (t == 111) System.out.println("HEY " + tile.entitiesHere + ", " + tile.occupied);
+		//if (t == 111) System.out.println("HEY " + tile.entitiesHere + ", " + tile.occupied);
 		if (tile.entitiesHere.size() == 0)
 			return false;
 

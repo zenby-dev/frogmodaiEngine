@@ -42,8 +42,8 @@ public class TileOccupationClearingSystem extends IteratingSystem {
 	
 	private void processTile(int e) {
 		Tile tile = mTile.get(e);
-		if (tile.entitiesHere.size() > 0)
-			System.out.println("CLEAR " + e + ", " + tile.entitiesHere.size());
+		//if (tile.entitiesHere.size() > 0)
+		//	System.out.println("CLEAR " + e + ", " + tile.entitiesHere.size());
 		tile.clear();
 	}
 	

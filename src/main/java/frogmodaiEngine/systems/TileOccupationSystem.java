@@ -55,7 +55,7 @@ public class TileOccupationSystem extends IteratingSystem {
 		if (t != -1) {
 			Tile tile = mTile.get(t);
 			tile.add(e);
-			System.out.println(e + ", " + mChar.get(e).tile.character + ", " + t + ", " + tile.entitiesHere);
+			//System.out.println(e + ", " + mChar.get(e).tile.character + ", " + t + ", " + tile.entitiesHere);
 			//System.out.println(tile.entitiesHere.size());
 			if (mTimedActor.has(e)) { //should change to BlocksMovement component or some such
 				tile.occupied = true;

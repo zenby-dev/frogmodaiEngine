@@ -11,7 +11,9 @@ import frogmodaiEngine.FrogmodaiEngine;
 import frogmodaiEngine.components.*;
 import frogmodaiEngine.events.CameraShift;
 import frogmodaiEngine.events.KeyboardInput;
+import frogmodaiEngine.events.ProcessIntermediate;
 import frogmodaiEngine.events.ScreenRefreshRequest;
+import frogmodaiEngine.events.TurnCycle;
 import net.mostlyoriginal.api.event.common.EventSystem;
 import net.mostlyoriginal.api.event.common.Subscribe;
 
@@ -41,9 +43,21 @@ public class CameraMovingSystem extends IteratingSystem {
 		if (event.key == 'k') doShift(camera, 0, -1);
 		if (event.key == 'l') doShift(camera, 1, 0);
 	}
+	
+	/*@Override
+	protected boolean checkProcessing() {
+		return false;
+	}*/
 
 	@Override
 	protected void process(int e) {
+		//processCycle(_p.cameraID);
+		//Breaks existing rendering systems (player doesn't appear)
+	}
+	
+	//@Override
+	protected void processCycle(int e) {
+		
 		Position camPos = mPosition.get(e);
 		CameraWindow camWindow = mCameraWindow.get(e);
 
@@ -55,10 +69,10 @@ public class CameraMovingSystem extends IteratingSystem {
 		//System.out.println(String.format("%d %d", focusPos.x, focusPos.y));
 
 		//int focusMove = focusNearEdge(camWindow.tolerance, focusPos, camPos, camWindow);
-		int atVertical = focusNearVertical(camWindow.tolerance, focusPos, camPos, camWindow);
-		int atHorizontal = focusNearHorizontal(camWindow.tolerance, focusPos, camPos, camWindow);
+		int dx = focusNearVertical(camWindow.tolerance, focusPos, camPos, camWindow);
+		int dy = focusNearHorizontal(camWindow.tolerance, focusPos, camPos, camWindow);
 
-		int dx = 0;
+		/*int dx = 0;
 		int dy = 0;
 		
 		if (atVertical == -1) {
@@ -71,9 +85,54 @@ public class CameraMovingSystem extends IteratingSystem {
 			dy = -1;
 		} else if (atHorizontal == 1) {
 			dy = 1;
-		}
+		}*/
 		
-		doShift(e, dx, dy);
+		if (dx != 0 || dy != 0) {
+			doShift(e, dx, dy);
+		}
+	}
+	
+	private boolean shouldProcess(int e) {
+		Position camPos = mPosition.get(e);
+		CameraWindow camWindow = mCameraWindow.get(e);
+
+		if (camWindow.focus == -1) {
+			return false;
+		}
+
+		Position focusPos = mPosition.get(camWindow.focus);
+		//System.out.println(String.format("%d %d", focusPos.x, focusPos.y));
+
+		//int focusMove = focusNearEdge(camWindow.tolerance, focusPos, camPos, camWindow);
+		int dx = focusNearVertical(camWindow.tolerance, focusPos, camPos, camWindow);
+		int dy = focusNearHorizontal(camWindow.tolerance, focusPos, camPos, camWindow);
+		
+		return (dx != 0 || dy != 0);
+	}
+	
+	@Subscribe
+	public void TurnCycleAfterListener(TurnCycle.After event) {
+		FrogmodaiEngine.logEventReceive("CameraMovingSystem", "TurnCycle.After");
+		es.dispatch(new CameraShift.Before(0, 0));
+	}
+	
+	@Subscribe
+	public void ProcessIntermediateBeforeListener(ProcessIntermediate.Before event) {
+		//FrogmodaiEngine.logEventReceive("CameraMovingSystem", "ProcessIntermediate.Before");
+		if (shouldProcess(_p.cameraID)) {
+			es.dispatch(new CameraShift.Before(0, 0));
+		}
+		//FrogmodaiEngine.logEventReceive("CameraMovingSystem", "CameraShift.Before");
+		//processCycle(_p.cameraID);
+		//doShift(_p.cameraID, event.dx, event.dy);
+	}
+	
+	
+	@Subscribe
+	public void CameraShiftBeforeListener(CameraShift.Before event) {
+		FrogmodaiEngine.logEventReceive("CameraMovingSystem", "CameraShift.Before");
+		processCycle(_p.cameraID);
+		//doShift(_p.cameraID, event.dx, event.dy);
 	}
 	
 	private void doShift(int e, int dx, int dy) {
@@ -95,15 +154,15 @@ public class CameraMovingSystem extends IteratingSystem {
 		camPos.y += dy;
 		
 		if (dx != 0 || dy != 0) {
-			FrogmodaiEngine.logEventEmit("CameraMovingSystem", "CameraShift");
-			es.dispatch(new CameraShift(dx, dy));
+			FrogmodaiEngine.logEventEmit("CameraMovingSystem", "CameraShift.After");
+			es.dispatch(new CameraShift.After(dx, dy));
 		}
 			//FrogmodaiEngine.worldManager.triggerTileRedraw();
 	}
 	
 	@Subscribe
-	public void CameraShiftListener(CameraShift event) {
-		FrogmodaiEngine.logEventReceive("CameraMovingSystem", "CameraShift");
+	public void CameraShiftAfterListener(CameraShift.After event) {
+		FrogmodaiEngine.logEventReceive("CameraMovingSystem", "CameraShift.After");
 		FrogmodaiEngine.logEventEmit("CameraMovingSystem", "ScreenRefreshRequest");
 		es.dispatch(new ScreenRefreshRequest());
 	}

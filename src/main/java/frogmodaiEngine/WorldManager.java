@@ -17,6 +17,7 @@ import frogmodaiEngine.components.*;
 import frogmodaiEngine.events.CameraShift;
 import frogmodaiEngine.events.ChangeStat;
 import frogmodaiEngine.events.HPAtZero;
+import frogmodaiEngine.events.ProcessIntermediate;
 import frogmodaiEngine.events.ProcessTurnCycle;
 import frogmodaiEngine.events.ProcessWorld;
 import frogmodaiEngine.events.ScreenRefreshRequest;
@@ -131,6 +132,7 @@ public class WorldManager {
 		
 		FrogmodaiEngine.logEventEmit("WorldManager", "TurnCycle.After");
 		es.dispatch(new TurnCycle.After());
+		FrogmodaiEngine.logEventEmit("WorldManager", "TURN CYCLE COMPLETE");
 	}
 
 	@Subscribe
@@ -207,6 +209,8 @@ public class WorldManager {
 				|| world.getSystem(DescriptiveTextSystem.class).drewThisFrame) {
 			// System.out.println("b");
 			_p.log("REFRESH APPROVED2");
+			world.getSystem(TileRenderingSystem.class).drewThisFrame = false;
+			world.getSystem(DescriptiveTextSystem.class).drewThisFrame = false;
 			return true;
 		}
 		return false;
@@ -334,7 +338,7 @@ public class WorldManager {
 	}
 
 	@Subscribe
-	void CameraShiftListener(CameraShift event) {
+	void CameraShiftAfterListener(CameraShift.After event) {
 		//triggerTileRedraw();
 		// FrogmodaiEngine.sendMessage(event.dx + ", " + event.dy);
 	}
