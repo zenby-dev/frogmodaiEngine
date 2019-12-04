@@ -81,7 +81,7 @@ public class VisionSystem extends BaseSystem {
 		sight.visibleTiles.clear();
 		for (RelativePosition rel : visitable.values()) {
 			boolean pass = FrogmodaiEngine.worldManager.badLOS(chunk, myPos.x, myPos.y, rel.x, rel.y);
-			if (pass || true) {
+			if (pass || sight.farSight) {
 				sight.visibleTiles.put(rel.toString(), rel);
 			}
 		}
