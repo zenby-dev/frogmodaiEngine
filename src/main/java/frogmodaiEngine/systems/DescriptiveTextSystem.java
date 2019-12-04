@@ -23,6 +23,9 @@ import frogmodaiEngine.Paragraph;
 import frogmodaiEngine.TextSegment;
 import frogmodaiEngine.iVec2;
 import frogmodaiEngine.components.*;
+import frogmodaiEngine.events.ProcessIntermediate;
+import frogmodaiEngine.events.TileRenderingFinished;
+import net.mostlyoriginal.api.event.common.Subscribe;
 
 public class DescriptiveTextSystem extends BaseSystem { // This is for terrain only
 	PScreen screen;
@@ -76,19 +79,30 @@ public class DescriptiveTextSystem extends BaseSystem { // This is for terrain o
 	
 	@Override
 	protected void processSystem() {
-		drewThisFrame = false;
+		/*drewThisFrame = false;
 		
 		if (fullRedraw) {
 			if (_p.cameraID != -1) {
 				FrogmodaiEngine.log("DescriptiveTextSystem.process (backup call)");
 				process(_p.cameraID);
 			}
+		}*/
+	}
+	
+	@Subscribe
+	public void ProcessIntermediateAfterListener(ProcessIntermediate.After event) {
+		if (!fullRedraw) return;
+		FrogmodaiEngine.logEventReceive("DescriptiveTextSystem", "ProcessIntermediate.After");
+		if (_p.cameraID != -1) {
+			processCycle();
 		}
+		//FrogmodaiEngine.logEventEmit("TileRenderingSystem", "TileRenderingFinished");
+		//es.dispatch(new TileRenderingFinished());
 	}
 
 	//@Override
-	public void process(int e) { // this happens with high frequency
-		//drewThisFrame = false;
+	public void processCycle() { // this happens with high frequency
+		drewThisFrame = false;
 
 		// fullRedraw = true;
 		if (fullRedraw) {

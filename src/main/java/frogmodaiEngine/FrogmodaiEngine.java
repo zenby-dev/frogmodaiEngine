@@ -47,7 +47,7 @@ public class FrogmodaiEngine extends PApplet {
 	
 	public float keyHeldAt = -1.0f;
 	public int keyRepeatDelay = 4;
-	public float keyRepeatLength = 0.15f;
+	public float keyRepeatLength = 0.15f/2;
 	public boolean keyFirstFired = false;
 	public boolean keyRepeatFired = false;
 	
@@ -120,7 +120,7 @@ public class FrogmodaiEngine extends PApplet {
 		//It controls things that should always be updated, even between game events
 		//Like animations and shaders and other stuff
 		
-		//background(0);
+		background(0);
 		
 		if (keyHeldAt > 0.0f && (seconds()-keyHeldAt > keyRepeatLength*(keyRepeatDelay+1))) {
 			keyHeldAt = seconds()-keyRepeatLength*keyRepeatDelay;
@@ -157,7 +157,7 @@ public class FrogmodaiEngine extends PApplet {
 
 		pushMatrix();
 		scale(1);
-		tint(255, 10);
+		//tint(255, 10);
 		image(terminal.buffer, 0, 0);
 		popMatrix();
 

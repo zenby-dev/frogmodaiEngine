@@ -40,7 +40,7 @@ public class ColorUtils {
 	}
 	
 	public static int HSBtoRGB(int h, int s, int b) {
-		return Color.HSBtoRGB(h/255.0f, s/255.0f, b/255.0f) << 8;
+		return Color.HSBtoRGB(h/255.0f, s/255.0f, b/255.0f) << 0;
 	}
 	
 	public static class Colors {

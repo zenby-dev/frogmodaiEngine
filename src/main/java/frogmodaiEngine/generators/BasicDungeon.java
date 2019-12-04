@@ -237,7 +237,8 @@ public class BasicDungeon {
 		Char character = mChar.create(me);
 		tile.solid = true;
 		character.tile.character = wallCharacter;
-		character.tile.style.fgc = ColorUtils.color(255, 0, 255);
+		character.tile.style.fgc = ColorUtils.HSBtoRGB((chunk % 32)*255/32, 255, 255);
+				//ColorUtils.HSBtoRGB(FrogmodaiEngine.random.nextInt(255), 255, 255);
 				//ColorUtils.HSBtoRGB((chunk % 6)*255/6, 255, 255);
 				//1 + (chunk % (TextColor.ANSI.values().length - 1));
 		//character.bold = false;
