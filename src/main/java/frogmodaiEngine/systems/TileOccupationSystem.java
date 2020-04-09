@@ -100,6 +100,6 @@ public class TileOccupationSystem extends IteratingSystem {
 		}
 		
 		FrogmodaiEngine.logEventEmit("TileOccupation", "TileOccupationFinished");
-		es.dispatch(new TileOccupationFinished());
+		FrogmodaiEngine.dispatch(new TileOccupationFinished());
 	}
 }

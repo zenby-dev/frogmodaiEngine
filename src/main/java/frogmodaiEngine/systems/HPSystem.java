@@ -81,7 +81,7 @@ public class HPSystem extends IteratingSystem {
 	@Subscribe
 	public void AfterHPAtZero(HPAtZero.After event) {
 		//TRIGGER DEATH!!
-		es.dispatch(new ActorDied(event.entity));
+		FrogmodaiEngine.dispatch(new ActorDied(event.entity));
 		//FrogmodaiEngine.sendMessage("GAAAAAAAAAAHH!!!!");
 		//FrogmodaiEngine.worldManager.world.delete(event.entity);
 	}

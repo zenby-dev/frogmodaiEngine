@@ -7,7 +7,8 @@ import net.mostlyoriginal.api.event.common.Event;
 
 public class ChangeStat {
 	public static void run(String name, int entity, int amount) {
-		FrogmodaiEngine.worldManager.runEventSet(new ChangeStat.Before(name, entity, amount),
+		FrogmodaiEngine.worldManager.runEventSet("ChangeStat",
+				new ChangeStat.Before(name, entity, amount),
 				new ChangeStat.During(name, entity, amount),
 				new ChangeStat.After(name, entity, amount));
 	}

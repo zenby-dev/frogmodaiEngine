@@ -101,7 +101,7 @@ public class TileRenderingSystem extends BaseSystem { // This is for terrain onl
 			process(_p.cameraID);
 		}
 		FrogmodaiEngine.logEventEmit("TileRenderingSystem", "TileRenderingFinished");
-		es.dispatch(new TileRenderingFinished());
+		FrogmodaiEngine.dispatch(new TileRenderingFinished());
 	}
 
 	protected void process(int e) { // this happens with high frequency
@@ -158,7 +158,7 @@ public class TileRenderingSystem extends BaseSystem { // This is for terrain onl
 		drewThisFrame = true;
 
 		FrogmodaiEngine.logEventEmit("TileRenderingSystem", "PostTileRendering");
-		es.dispatch(new PostTileRendering());
+		FrogmodaiEngine.dispatch(new PostTileRendering());
 
 		// FrogmodaiEngine.worldManager.mapLoader.drawMap();
 

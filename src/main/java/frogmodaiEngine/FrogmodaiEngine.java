@@ -10,6 +10,7 @@ import frogmodaiEngine.events.ProcessWorld;
 import frogmodaiEngine.Paragraph;
 import frogmodaiEngine.TextSegment;
 import frogmodaiEngine.systems.DescriptiveTextSystem;
+import net.mostlyoriginal.api.event.common.Event;
 import net.mostlyoriginal.api.event.common.EventSystem;
 import net.mostlyoriginal.api.event.common.Subscribe;
 import frogmodaiEngine.ArchetypeBuilders;
@@ -51,7 +52,9 @@ public class FrogmodaiEngine extends PApplet {
 	public boolean keyFirstFired = false;
 	public boolean keyRepeatFired = false;
 	
-	public EventSystem es;
+	static int logIndent = 0;
+	
+	public static EventSystem es;
 
 	public void settings() {
 		size(512*2, 512, P2D);
@@ -111,7 +114,9 @@ public class FrogmodaiEngine extends PApplet {
 	
 	public void processTurnCycle() { //??????
 		logEventEmit("FrogmodaiEngine", "ProcessTurnCycle");
+		logPush();
 		worldManager.ProcessTurnCycleListener(new ProcessTurnCycle());
+		logPop();
 	}
 
 	public void renderLoop() {
@@ -137,7 +142,7 @@ public class FrogmodaiEngine extends PApplet {
 			keyRepeatFired = true;
 			//log("boop");
 			logEventEmit("FrogmodaiEngine", "PlayerKeyboardInput");
-			es.dispatch(new KeyboardInput(key, keyCode));
+			dispatch(new KeyboardInput(key, keyCode));
 		}
 		
 		/*if (FRAME % 8 == 0) {
@@ -258,11 +263,43 @@ public class FrogmodaiEngine extends PApplet {
 	}
 	
 	public static void logEventEmit(String systemName, String eventName) {
-		System.out.printf("%s <<< %s\n", eventName, systemName);
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < logIndent; i++) {
+			sb.append('\t');
+		}
+		System.out.printf("%s%s >>> %s\n", sb.toString(), systemName, eventName);
+		//logPush();
 	}
 	
 	public static void logEventReceive(String systemName, String eventName) {
-		System.out.printf("%s >>> %s\n", eventName, systemName);
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < logIndent; i++) {
+			sb.append('\t');
+		}
+		System.out.printf("%s%s <<< %s\n", sb.toString(), systemName, eventName);
+	}
+	
+	public static void logEventStart() {
+		logPush();
+	}
+	
+	public static void logEventEnd() {
+		logPop();
+	}
+	
+	public static void logPush() {
+		logIndent++;
+	}
+	
+	public static void logPop() {
+		logIndent--;
+		logIndent = max(0, logIndent);
+	}
+	
+	public static void dispatch(Event e) {
+		FrogmodaiEngine.logEventStart();
+		es.dispatch(e);
+		FrogmodaiEngine.logEventEnd();
 	}
 	
 	public float seconds() {

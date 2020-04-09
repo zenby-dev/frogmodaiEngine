@@ -7,7 +7,8 @@ import net.mostlyoriginal.api.event.common.Event;
 
 public class TryToHit {
 	public static void run(int entity, int target) {
-		FrogmodaiEngine.worldManager.runEventSet(new TryToHit.Before(entity, target),
+		FrogmodaiEngine.worldManager.runEventSet("TryToHit",
+				new TryToHit.Before(entity, target),
 				new TryToHit.During(entity, target),
 				new TryToHit.After(entity, target));
 	}

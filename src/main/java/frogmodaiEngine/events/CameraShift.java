@@ -7,7 +7,8 @@ import net.mostlyoriginal.api.event.common.Event;
 
 public class CameraShift {
 	public static void run(int dx, int dy) {
-		FrogmodaiEngine.worldManager.runEventSet(new CameraShift.Before(dx, dy),
+		FrogmodaiEngine.worldManager.runEventSet("CameraShift",
+				new CameraShift.Before(dx, dy),
 				new CameraShift.During(dx, dy),
 				new CameraShift.After(dx, dy));
 	}

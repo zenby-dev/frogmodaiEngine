@@ -7,7 +7,9 @@ import net.mostlyoriginal.api.event.common.Event;
 
 public class ProcessIntermediate {
 	public static void run() {
-		FrogmodaiEngine.worldManager.runEventSet(new ProcessIntermediate.Before(),
+		//FrogmodaiEngine.logEventEmit("???", "ProcessIntermediate");
+		FrogmodaiEngine.worldManager.runEventSet(null,
+				new ProcessIntermediate.Before(),
 				new ProcessIntermediate.During(),
 				new ProcessIntermediate.After());
 	}

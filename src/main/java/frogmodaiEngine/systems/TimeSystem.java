@@ -35,6 +35,7 @@ public class TimeSystem extends IteratingSystem {
 	}
 	
 	public boolean tick(int index) { //WHOLE SYSTEM
+		FrogmodaiEngine.logEventReceive("TimeSystem", "TurnCycle.Before");
 		if (lockCount > 0)
 			return false;
 		
@@ -53,12 +54,12 @@ public class TimeSystem extends IteratingSystem {
 			
 			FrogmodaiEngine.logEventEmit("TimeSystem", "ActorTakeTurn.Before");
 			ActorTakeTurn.Before beforeEvent = new ActorTakeTurn.Before(a);
-			es.dispatch(beforeEvent);
+			FrogmodaiEngine.dispatch(beforeEvent);
 			if (beforeEvent.isCancelled()) break;
 			
 			FrogmodaiEngine.logEventEmit("TimeSystem", "ActorTakeTurn.During");
 			ActorTakeTurn.During duringEvent = new ActorTakeTurn.During(a);
-			es.dispatch(duringEvent);
+			FrogmodaiEngine.dispatch(duringEvent);
 			int actionCost = duringEvent.actionCost;
 			if (duringEvent.passing) actionCost = actor.energy;
 			//int actionCost = actor.act.apply(a); // THIS WHERE ACTOR DO
@@ -66,7 +67,7 @@ public class TimeSystem extends IteratingSystem {
 			
 			FrogmodaiEngine.logEventEmit("TimeSystem", "ActorTakeTurn.After");
 			ActorTakeTurn.After afterEvent = new ActorTakeTurn.After(a);
-			es.dispatch(afterEvent);
+			FrogmodaiEngine.dispatch(afterEvent);
 			
 			if (currentActorRemoved) {
 				currentActorRemoved = false;

@@ -7,7 +7,8 @@ import net.mostlyoriginal.api.event.common.Event;
 
 public class MoveAttempt {
 	public static void run(int entity, int dx, int dy) {
-		FrogmodaiEngine.worldManager.runEventSet(new MoveAttempt.Before(entity, dx, dy),
+		//FrogmodaiEngine.logEventEmit("PlayerSystem", "MoveAttempt");
+		FrogmodaiEngine.worldManager.runEventSet("MoveAttempt", new MoveAttempt.Before(entity, dx, dy),
 				new MoveAttempt.During(entity, dx, dy),
 				new MoveAttempt.After(entity, dx, dy));
 	}

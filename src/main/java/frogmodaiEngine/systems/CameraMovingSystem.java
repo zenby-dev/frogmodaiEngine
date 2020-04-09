@@ -113,14 +113,14 @@ public class CameraMovingSystem extends IteratingSystem {
 	@Subscribe
 	public void TurnCycleAfterListener(TurnCycle.After event) {
 		FrogmodaiEngine.logEventReceive("CameraMovingSystem", "TurnCycle.After");
-		es.dispatch(new CameraShift.Before(0, 0));
+		FrogmodaiEngine.dispatch(new CameraShift.Before(0, 0));
 	}
 	
 	@Subscribe
 	public void ProcessIntermediateBeforeListener(ProcessIntermediate.Before event) {
 		//FrogmodaiEngine.logEventReceive("CameraMovingSystem", "ProcessIntermediate.Before");
 		if (shouldProcess(_p.cameraID)) {
-			es.dispatch(new CameraShift.Before(0, 0));
+			FrogmodaiEngine.dispatch(new CameraShift.Before(0, 0));
 		}
 		//FrogmodaiEngine.logEventReceive("CameraMovingSystem", "CameraShift.Before");
 		//processCycle(_p.cameraID);
@@ -155,7 +155,7 @@ public class CameraMovingSystem extends IteratingSystem {
 		
 		if (dx != 0 || dy != 0) {
 			FrogmodaiEngine.logEventEmit("CameraMovingSystem", "CameraShift.After");
-			es.dispatch(new CameraShift.After(dx, dy));
+			FrogmodaiEngine.dispatch(new CameraShift.After(dx, dy));
 		}
 			//FrogmodaiEngine.worldManager.triggerTileRedraw();
 	}
@@ -164,7 +164,7 @@ public class CameraMovingSystem extends IteratingSystem {
 	public void CameraShiftAfterListener(CameraShift.After event) {
 		FrogmodaiEngine.logEventReceive("CameraMovingSystem", "CameraShift.After");
 		FrogmodaiEngine.logEventEmit("CameraMovingSystem", "ScreenRefreshRequest");
-		es.dispatch(new ScreenRefreshRequest());
+		FrogmodaiEngine.dispatch(new ScreenRefreshRequest());
 	}
 
 	private int focusNearEdge(int tolerance, Position focus, Position cam, CameraWindow window) {

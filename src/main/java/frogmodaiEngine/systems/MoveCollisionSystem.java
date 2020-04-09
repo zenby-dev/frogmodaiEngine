@@ -56,7 +56,7 @@ public class MoveCollisionSystem extends BaseSystem {
 		if (tile.entitiesHere.size() > 0) {
 			for (int o : tile.entitiesHere) {
 				//System.out.println(e + ", " + mIsPlayer.has(e) + ", " + o + ", " + mIsPlayer.has(o));
-				es.dispatch(new frogmodaiEngine.events.OnTouch(e, o));
+				FrogmodaiEngine.dispatch(new frogmodaiEngine.events.OnTouch(e, o));
 				//es.dispatch(new frogmodaiEngine.events.OnTouched(o, e));
 				/*if (mOnTouched.has(o)) {
 					OnTouched onTouched = mOnTouched.create(o);

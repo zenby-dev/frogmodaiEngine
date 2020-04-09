@@ -183,7 +183,7 @@ public class CharacterMovingSystem extends BaseEntitySystem {
 		// And otherwise use standard roguelike controls or an "action" key + direction
 		// like caves of qud
 		FrogmodaiEngine.logEventEmit("CharacterMovingSystem", "MoveCollision");
-		es.dispatch(new MoveCollision(e, neighbor));
+		FrogmodaiEngine.dispatch(new MoveCollision(e, neighbor));
 	}
 
 	private void process(int e) {

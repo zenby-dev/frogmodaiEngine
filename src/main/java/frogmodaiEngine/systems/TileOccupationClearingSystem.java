@@ -66,6 +66,6 @@ public class TileOccupationClearingSystem extends IteratingSystem {
 		}
 		
 		FrogmodaiEngine.logEventEmit("TileOccupationClearing", "TriggerTileOccupation");
-		es.dispatch(new TriggerTileOccupation());
+		FrogmodaiEngine.dispatch(new TriggerTileOccupation());
 	}
 }

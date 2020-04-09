@@ -8,7 +8,8 @@ import net.mostlyoriginal.api.event.common.Event;
 public class HPAtZero {
 	
 	public static void run(int entity) {
-		FrogmodaiEngine.worldManager.runEventSet(new HPAtZero.Before(entity),
+		FrogmodaiEngine.worldManager.runEventSet("HPAtZero",
+				new HPAtZero.Before(entity),
 				new HPAtZero.During(entity),
 				new HPAtZero.After(entity));
 	}

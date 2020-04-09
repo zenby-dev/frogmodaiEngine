@@ -64,7 +64,7 @@ public class DeathSystem1 extends BaseSystem {
 			FrogmodaiEngine.sendMessage(para);
 		}
 
-		es.dispatch(new ScreenRefreshRequest());
+		FrogmodaiEngine.dispatch(new ScreenRefreshRequest());
 	}
 
 }

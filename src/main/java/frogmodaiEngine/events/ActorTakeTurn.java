@@ -7,7 +7,9 @@ import net.mostlyoriginal.api.event.common.Event;
 
 public class ActorTakeTurn {
 	public static void run(int entity) {
-		FrogmodaiEngine.worldManager.runEventSet(new ActorTakeTurn.Before(entity),
+		//FrogmodaiEngine.logEventEmit("???", "ActorTakeTurn");
+		FrogmodaiEngine.worldManager.runEventSet("ActorTakeTurn",
+				new ActorTakeTurn.Before(entity),
 				new ActorTakeTurn.During(entity),
 				new ActorTakeTurn.After(entity));
 	}

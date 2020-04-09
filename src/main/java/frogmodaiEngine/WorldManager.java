@@ -118,20 +118,22 @@ public class WorldManager {
 		int actorsPerUpdate = timeSystem.getNumActors();
 		
 		FrogmodaiEngine.logEventEmit("WorldManager", String.format("TurnCycle.Before(%d)", actorsPerUpdate));
-		es.dispatch(new TurnCycle.Before());
+		FrogmodaiEngine.dispatch(new TurnCycle.Before());
 		
+		FrogmodaiEngine.logPush();
 		for (int i = 0; i < actorsPerUpdate; i++) {
 			if (!timeSystem.tick(i))
 				break;
 			timeSystem.actedCount++;
 		}
+		FrogmodaiEngine.logPop();
 		
 		if (timeSystem.actedCount >= actorsPerUpdate) {
 			timeSystem.actedCount = 0;
 		}
 		
 		FrogmodaiEngine.logEventEmit("WorldManager", "TurnCycle.After");
-		es.dispatch(new TurnCycle.After());
+		FrogmodaiEngine.dispatch(new TurnCycle.After());
 		FrogmodaiEngine.logEventEmit("WorldManager", "TURN CYCLE COMPLETE");
 	}
 
@@ -175,16 +177,22 @@ public class WorldManager {
 
 	}
 
-	public void runEventSet(CancellableEvent _before, CancellableEvent _during, Event _after) {
+	public void runEventSet(String eventName, CancellableEvent _before, CancellableEvent _during, Event _after) {
 		CancellableEvent before = _before;
 		// System.out.println(es);
-		es.dispatch(before);
+		if (eventName != null)
+			FrogmodaiEngine.logEventEmit("---", String.format("%s.Before", eventName));
+		FrogmodaiEngine.dispatch(before);
 		if (!before.isCancelled()) {
 			CancellableEvent during = _during;
-			es.dispatch(during);
+			if (eventName != null)
+				FrogmodaiEngine.logEventEmit("---", String.format("%s.During", eventName));
+			FrogmodaiEngine.dispatch(during);
 			if (!during.isCancelled()) {
 				Event after = _after;
-				es.dispatch(after);
+				if (eventName != null)
+					FrogmodaiEngine.logEventEmit("---", String.format("%s.After", eventName));
+				FrogmodaiEngine.dispatch(after);
 			}
 		}
 	}

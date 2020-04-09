@@ -101,7 +101,8 @@ public class PlayerSystem extends BaseSystem {
 		//if (keystroke != null) {
 		if (_p.keyPressed) {
 			
-			FrogmodaiEngine.logEventEmit("PlayerSystem", "MoveAttempt"); //Just fire on every key for now
+			//Just fire on every key for now
+			FrogmodaiEngine.logEventEmit("PlayerSystem", "MoveAttempt");
 			
 			//KeyType keytype = keystroke.getKeyType();
 			boolean coded = _p.key == _p.CODED;
@@ -138,7 +139,7 @@ public class PlayerSystem extends BaseSystem {
 				MOVE_COST = (int) (timedActor.speed * 1.0f); // moving should take a majority of your energy
 				//I guess just send a draw request every time the player's turn ends???
 				FrogmodaiEngine.logEventEmit("PlayerSystem", "ScreenRefreshRequest");
-				es.dispatch(new ScreenRefreshRequest());
+				FrogmodaiEngine.dispatch(new ScreenRefreshRequest());
 			}
 			
 			if (!coded) {
@@ -158,7 +159,7 @@ public class PlayerSystem extends BaseSystem {
 			}
 			
 			FrogmodaiEngine.logEventEmit("PlayerSystem", "PlayerTookTurn");
-			es.dispatch(new PlayerTookTurn());
+			FrogmodaiEngine.dispatch(new PlayerTookTurn());
 			
 			//FrogmodaiEngine.keystroke = null; // KEYSTROKES SHOULD NOT COUNT MORE THAN ONCE
 			//_p.key = KeyEvent.VK_UNDEFINED;
