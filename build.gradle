@@ -19,12 +19,6 @@ configurations {
     externalLibs
 }
 
-eclipse {
-	jdt {
-		javaRuntimeName = "JavaSE-1.8"
-	}
-}
-
 dependencies {
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     //api 'org.apache.commons:commons-math3:3.6.1'
@@ -60,6 +54,12 @@ dependencies {
 	implementation 'com.github.chrisvest:stormpot:2.4.1'
 }
 
+eclipse {
+	jdt {
+		javaRuntimeName = "JavaSE-1.8"
+	}
+}
+
 jar {
   manifest {
     attributes(
@@ -69,3 +69,4 @@ jar {
   }
   baseName = 'frogmodaiEngine'
 }
+
