@@ -61,3 +61,5 @@ story/04 20 story shit.scriv/Settings/ui-common.xml
 story/04 20 story shit.scriv/Settings/ui.plist
 story/040820 01
 planning/03 21 20
+/.gradle/
+/build/

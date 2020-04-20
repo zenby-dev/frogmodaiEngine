@@ -1,13 +1,13 @@
 Manifest-Version: 1.0
-Class-Path: contrib-plugin-operations-2.4.0.jar contrib-eventbus-2.4.0
- .jar contrib-core-2.4.0.jar artemis-odb-serializer-2.2.0.jar jogl-all
- -main-2.3.2.jar joise-1.1.0.jar commons-pool2-2.7.0.jar artemis-odb-2
- .2.0.jar jogl-all-2.3.2.jar jogl-all-2.3.2-natives-android-aarch64.ja
- r jogl-all-2.3.2-natives-android-armv6.jar jogl-all-2.3.2-natives-lin
- ux-amd64.jar jogl-all-2.3.2-natives-linux-armv6.jar jogl-all-2.3.2-na
- tives-linux-armv6hf.jar jogl-all-2.3.2-natives-linux-i586.jar jogl-al
- l-2.3.2-natives-macosx-universal.jar jogl-all-2.3.2-natives-solaris-a
- md64.jar jogl-all-2.3.2-natives-solaris-i586.jar jogl-all-2.3.2-nativ
- es-windows-amd64.jar jogl-all-2.3.2-natives-windows-i586.jar
+Class-Path: contrib-plugin-operations-2.4.0.jar contrib-eventbus-2.4.0.j
+ ar contrib-core-2.4.0.jar artemis-odb-serializer-2.2.0.jar jogl-all-mai
+ n-2.3.2.jar joise-1.1.0.jar commons-pool2-2.7.0.jar artemis-odb-2.2.0.j
+ ar jogl-all-2.3.2.jar jogl-all-2.3.2-natives-android-aarch64.jar jogl-a
+ ll-2.3.2-natives-android-armv6.jar jogl-all-2.3.2-natives-linux-amd64.j
+ ar jogl-all-2.3.2-natives-linux-armv6.jar jogl-all-2.3.2-natives-linux-
+ armv6hf.jar jogl-all-2.3.2-natives-linux-i586.jar jogl-all-2.3.2-native
+ s-macosx-universal.jar jogl-all-2.3.2-natives-solaris-amd64.jar jogl-al
+ l-2.3.2-natives-solaris-i586.jar jogl-all-2.3.2-natives-windows-amd64.j
+ ar jogl-all-2.3.2-natives-windows-i586.jar
 Main-Class: frogmodaiEngine.FrogmodaiEngine
 
