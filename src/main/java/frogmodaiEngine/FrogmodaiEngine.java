@@ -143,6 +143,10 @@ public class FrogmodaiEngine extends PApplet {
 			//log("boop");
 			logEventEmit("FrogmodaiEngine", "PlayerKeyboardInput");
 			dispatch(new KeyboardInput(key, keyCode));
+			
+			// 04/09/20 This should still be here, but it shouldn't be what triggers the event loop?
+			//
+			
 		}
 		
 		/*if (FRAME % 8 == 0) {
