@@ -56,7 +56,7 @@ dependencies {
 
 eclipse {
 	classpath {
-        containers 'org.eclipse.buildship.core.gradleclasspathcontainer'
+        //containers 'org.eclipse.buildship.core.gradleclasspathcontainer'
         file {
             whenMerged {
             	def lib = entries.find { it.path.contains 'org.eclipse.buildship.core.gradleclasspathcontainer' }
