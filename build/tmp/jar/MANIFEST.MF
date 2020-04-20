@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
-Class-Path: contrib-core-2.4.0.jar contrib-plugin-operations-2.4.0.jar
-  contrib-eventbus-2.4.0.jar artemis-odb-serializer-2.2.0.jar jogl-all
+Class-Path: contrib-plugin-operations-2.4.0.jar contrib-eventbus-2.4.0
+ .jar contrib-core-2.4.0.jar artemis-odb-serializer-2.2.0.jar jogl-all
  -main-2.3.2.jar joise-1.1.0.jar commons-pool2-2.7.0.jar artemis-odb-2
  .2.0.jar jogl-all-2.3.2.jar jogl-all-2.3.2-natives-android-aarch64.ja
  r jogl-all-2.3.2-natives-android-armv6.jar jogl-all-2.3.2-natives-lin
