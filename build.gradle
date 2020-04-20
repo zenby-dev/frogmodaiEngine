@@ -56,12 +56,14 @@ dependencies {
 
 eclipse {
 	classpath {
-        //containers 'org.eclipse.buildship.core.gradleclasspathcontainer'
+        containers 'org.eclipse.buildship.core.gradleclasspathcontainer'
         file {
             whenMerged {
-                def con = entries.find { it.path == 'org.eclipse.buildship.core.gradleclasspathcontainer' }
+            	def lib = entries.find { it.path.contains 'org.eclipse.buildship.core.gradleclasspathcontainer' }
+   				lib.exported = true
+                //def con = entries.find { it.path == 'org.eclipse.buildship.core.gradleclasspathcontainer' }
                 //def src = entries.find { it.path == 'src/test/java' }
-                con.entryAttributes['exported'] = 'false'
+                //con.entryAttributes['exported'] = 'true'
                 //src.entryAttributes['ignore_optional_problems'] = 'true'
             }
         }
