@@ -54,12 +54,17 @@ dependencies {
 	implementation 'com.github.chrisvest:stormpot:2.4.1'
 }
 
-eclipse {
-	classpath {
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+/*eclipse {
+	/*classpath {
         //containers 'org.eclipse.buildship.core.gradleclasspathcontainer'
         file {
-            whenMerged {
-            	def lib = entries.find { it.path.contains 'org.eclipse.buildship.core.gradleclasspathcontainer' }
+            beforeMerged {
+            	def lib = entries.find { it.path.contains 'gradleclasspathcontainer' }
    				lib.exported = true
                 //def con = entries.find { it.path == 'org.eclipse.buildship.core.gradleclasspathcontainer' }
                 //def src = entries.find { it.path == 'src/test/java' }
@@ -71,7 +76,7 @@ eclipse {
 	jdt {
 		javaRuntimeName = "JavaSE-1.8"
 	}
-}
+}*/
 
 jar {
   manifest {
