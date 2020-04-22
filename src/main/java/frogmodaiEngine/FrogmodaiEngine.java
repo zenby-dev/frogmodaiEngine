@@ -35,6 +35,8 @@ public class FrogmodaiEngine extends PApplet {
 	PGraphics buffer;
 	PTerminal terminal;
 	public PScreen screen;
+	
+	static boolean loggingEnabled = false;
 
 	public static WorldManager worldManager;
 	public static iVec2 terminalSize;
@@ -43,21 +45,24 @@ public class FrogmodaiEngine extends PApplet {
 	public static int cameraID = -1;
 	static int loopSpeed = 10;
 	public static Random random;
-	public static int screenWidth = 64 * 2;
-	public static int screenHeight = 32;
-	
+	public static int screenWidth = 32 * 1;
+	public static int screenHeight = 32 * 1;
+
 	public float keyHeldAt = -1.0f;
 	public int keyRepeatDelay = 4;
-	public float keyRepeatLength = 0.15f/2;
+	public float keyRepeatLength = 0.15f / 2;
 	public boolean keyFirstFired = false;
 	public boolean keyRepeatFired = false;
-	
+
 	static int logIndent = 0;
-	
+
+	char lastPressedKey;
+	int lastKeyCode;
+
 	public static EventSystem es;
 
 	public void settings() {
-		size(512*2, 512, P2D);
+		size(2*512/32*screenWidth, 512/32*screenHeight, P2D);
 		noSmooth();
 	}
 
@@ -69,23 +74,23 @@ public class FrogmodaiEngine extends PApplet {
 		// dither = new Dither(this);
 
 		buffer = createGraphics(width, height, P2D);
-		terminal = new PTerminal(this, 64, 32);
+		terminal = new PTerminal(this, 2*screenWidth, screenHeight);
 		screen = new PScreen(this, terminal);
 		random = new Random();
-		
+
 		// Initiate the world
 		worldManager = new WorldManager(this, screen);
-		//worldManager.registerEvents(this);
-		
+		// worldManager.registerEvents(this);
+
 		// Initiate Archetypes
 		ArchetypeBuilders.initArchetypes();
-		
+
 		// Load Chunks
 		worldManager.start();
 		processWorld();
 		processTurnCycle();
 
-		//mainLoop();
+		// mainLoop();
 
 		draw();
 	}
@@ -95,24 +100,24 @@ public class FrogmodaiEngine extends PApplet {
 
 		renderLoop();
 	}
-	
+
 	public void doRedraw() {
 		if (worldManager.refreshNeeded()) {
 			doRender();
 		}
 	}
-	
-	public void processWorld() { //?????????
-		//logEventEmit("FrogmodaiEngine", "ProcessWorld");
+
+	public void processWorld() { // ?????????
+		// logEventEmit("FrogmodaiEngine", "ProcessWorld");
 		worldManager.ProcessWorldListener(new ProcessWorld());
 	}
-	
+
 	public void processIntermediate() {
-		//logEventEmit("FrogmodaiEngine", "ProcessIntermediate");
+		// logEventEmit("FrogmodaiEngine", "ProcessIntermediate");
 		ProcessIntermediate.run();
 	}
-	
-	public void processTurnCycle() { //??????
+
+	public void processTurnCycle() { // ??????
 		logEventEmit("FrogmodaiEngine", "ProcessTurnCycle");
 		logPush();
 		worldManager.ProcessTurnCycleListener(new ProcessTurnCycle());
@@ -120,53 +125,58 @@ public class FrogmodaiEngine extends PApplet {
 	}
 
 	public void renderLoop() {
-		//This is the standard loop in processing
-		//It should happen real-time, always
-		//It controls things that should always be updated, even between game events
-		//Like animations and shaders and other stuff
-		
+		// This is the standard loop in processing
+		// It should happen real-time, always
+		// It controls things that should always be updated, even between game events
+		// Like animations and shaders and other stuff
+
 		background(0);
-		
-		if (keyHeldAt > 0.0f && (seconds()-keyHeldAt > keyRepeatLength*(keyRepeatDelay+1))) {
-			keyHeldAt = seconds()-keyRepeatLength*keyRepeatDelay;
-			//log(seconds()-keyHeldAt + ", " + keyRepeatLength*keyRepeatDelay);
+
+		if (keyHeldAt > 0.0f && (seconds() - keyHeldAt > keyRepeatLength * (keyRepeatDelay + 1))) {
+			keyHeldAt = seconds() - keyRepeatLength * keyRepeatDelay;
+			// log(seconds()-keyHeldAt + ", " + keyRepeatLength*keyRepeatDelay);
 			keyRepeatFired = false;
 		}
-		
-		//log(seconds()-keyHeldAt + ", " + keyRepeatLength*keyRepeatDelay + ", " + !keyRepeatFired);
-		
-		//worldManager.process();
-		if ((keyHeldAt > 0.0f && !keyFirstFired) || 
-				(keyHeldAt > 0.0f && seconds()-keyHeldAt >= keyRepeatLength*keyRepeatDelay && !keyRepeatFired)) {
+
+		// log(seconds()-keyHeldAt + ", " + keyRepeatLength*keyRepeatDelay + ", " +
+		// !keyRepeatFired);
+
+		// BUG: Hold one key, press another, let go of the first one, key repeat doesn't
+		// happen for the second key
+
+		// worldManager.process();
+		if ((keyHeldAt > 0.0f && !keyFirstFired)
+				|| (keyHeldAt > 0.0f && seconds() - keyHeldAt >= keyRepeatLength * keyRepeatDelay && !keyRepeatFired)) {
 			keyFirstFired = true;
 			keyRepeatFired = true;
-			//log("boop");
+			// log("boop");
 			logEventEmit("FrogmodaiEngine", "PlayerKeyboardInput");
 			dispatch(new KeyboardInput(key, keyCode));
-			
-			// 04/09/20 This should still be here, but it shouldn't be what triggers the event loop?
+
+			// 04/09/20 This should still be here, but it shouldn't be what triggers the
+			// event loop?
 			//
-			
+
 		}
-		
-		/*if (FRAME % 8 == 0) {
-			es.dispatch(new ProcessTurnCycle());
-		}*/
-		
-		//processWorld();
+
+		/*
+		 * if (FRAME % 8 == 0) { es.dispatch(new ProcessTurnCycle()); }
+		 */
+
+		// processWorld();
 		processIntermediate();
-		//es.dispatch(new ProcessWorld()); //Constantly processed systems
+		// es.dispatch(new ProcessWorld()); //Constantly processed systems
 
 		// Redraw screen
 		doRedraw();
 
-		/*if (FRAME % 8 == 0) {
-			doRender();
-		}*/
+		/*
+		 * if (FRAME % 8 == 0) { doRender(); }
+		 */
 
 		pushMatrix();
 		scale(1);
-		//tint(255, 10);
+		// tint(255, 10);
 		image(terminal.buffer, 0, 0);
 		popMatrix();
 
@@ -174,25 +184,25 @@ public class FrogmodaiEngine extends PApplet {
 		// image(dither.buffer,0,0);
 		FRAME++;
 	}
-	
+
 	@Subscribe
 	public void PlayerKeyboardInputListener(KeyboardInput event) {
 		logEventReceive("FrogmodaiEngine", "PlayerKeyboardInput");
 		processTurnCycle();
-		//es.dispatch(new ProcessTurnCycle());
+		// es.dispatch(new ProcessTurnCycle());
 	}
-	
+
 	public int terminalMouseX() {
 		return terminal.screenToTerminalX(mouseX);
 	}
-	
+
 	public int terminalMouseY() {
 		return terminal.screenToTerminalY(mouseY);
 	}
-	
-	//TODO: Screen-to-Camera coordinates???
-	//Picking tiles by mouse
-	//Getting debug info on clicked tile
+
+	// TODO: Screen-to-Camera coordinates???
+	// Picking tiles by mouse
+	// Getting debug info on clicked tile
 
 	void doRender() {
 		int x = terminal.screenToTerminalX(mouseX);
@@ -214,7 +224,7 @@ public class FrogmodaiEngine extends PApplet {
 		// int x1 = (int) random(terminal.resX);
 		// int y1 = (int) random(terminal.resY);
 		// screen.fill(new PTextCharacter('/', randomColor(), randomColor()));
-		//screen.stroke(new PTile(' ', randomColor(), randomColor()));
+		// screen.stroke(new PTile(' ', randomColor(), randomColor()));
 		// screen.print("Howdy", x0, y0);
 
 		terminal.render();
@@ -228,14 +238,28 @@ public class FrogmodaiEngine extends PApplet {
 	}
 
 	public void keyPressed() {
-		//log("pressed");
+		println(key);
+		println("pressed " + Character.toString(key));
+		lastPressedKey = key;
+		lastKeyCode= keyCode;
 		keyHeldAt = seconds();
 		keyFirstFired = false;
 		keyRepeatFired = false;
 	}
-	
+
 	public void keyReleased() {
-		//log("released");
+		println("released " + Character.toString(key));
+		// TODO: do a check that NO keys are held, not that A SINGLE key has been
+		// released
+		//BUT Now it has to be the opposite if the second key that was held down is let go before the first, it keeps triggering the second
+		//or just cancel out (TODO)
+		if (keyPressed) {
+			key = lastPressedKey;
+			keyCode = lastKeyCode;
+			println("released2 " + Character.toString(key));
+			return;
+		}
+		
 		keyHeldAt = -1.0f;
 		keyFirstFired = false;
 		keyRepeatFired = false;
@@ -257,57 +281,60 @@ public class FrogmodaiEngine extends PApplet {
 		para.add(s);
 		worldManager.world.getSystem(DescriptiveTextSystem.class).addParagraph(para);
 	}
-	
+
 	public static void delete(int e) {
 		worldManager.world.delete(e);
 	}
-	
+
 	public static void log(String str) {
+		if (!loggingEnabled) return;
 		System.out.println(str);
 	}
-	
+
 	public static void logEventEmit(String systemName, String eventName) {
+		if (!loggingEnabled) return;
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < logIndent; i++) {
 			sb.append('\t');
 		}
 		System.out.printf("%s%s >>> %s\n", sb.toString(), systemName, eventName);
-		//logPush();
+		// logPush();
 	}
-	
+
 	public static void logEventReceive(String systemName, String eventName) {
+		if (!loggingEnabled) return;
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < logIndent; i++) {
 			sb.append('\t');
 		}
 		System.out.printf("%s%s <<< %s\n", sb.toString(), systemName, eventName);
 	}
-	
+
 	public static void logEventStart() {
 		logPush();
 	}
-	
+
 	public static void logEventEnd() {
 		logPop();
 	}
-	
+
 	public static void logPush() {
 		logIndent++;
 	}
-	
+
 	public static void logPop() {
 		logIndent--;
 		logIndent = max(0, logIndent);
 	}
-	
+
 	public static void dispatch(Event e) {
 		FrogmodaiEngine.logEventStart();
 		es.dispatch(e);
 		FrogmodaiEngine.logEventEnd();
 	}
-	
+
 	public float seconds() {
-		return millis()/1000.0f;
+		return millis() / 1000.0f;
 	}
 
 	///////////////////////////////

@@ -61,7 +61,7 @@ public class TileRenderingSystem extends BaseSystem { // This is for terrain onl
 		// buffer = new ScreenBuffer(new TerminalSize(FrogmodaiEngine.screenWidth / 2,
 		// FrogmodaiEngine.screenHeight),
 		// new PTile(' ', TextColor.ANSI.BLACK, TextColor.ANSI.BLACK));
-		buffer = new PScreen(_p, new PTerminal(_p, 32, 32));
+		buffer = new PScreen(_p, new PTerminal(_p, _p.screenWidth, _p.screenHeight));
 		// emptyCharacter = new TextCharacter('X', TextColor.ANSI.YELLOW,
 		// TextColor.ANSI.BLUE);
 		emptyCharacter = new PTile(ColorUtils.emptyTile);

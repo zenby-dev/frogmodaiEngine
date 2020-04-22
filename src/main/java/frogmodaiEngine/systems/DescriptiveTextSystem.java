@@ -58,7 +58,7 @@ public class DescriptiveTextSystem extends BaseSystem { // This is for terrain o
 		//System.out.printf("%d, %d\n", FrogmodaiEngine.screenWidth / 2, FrogmodaiEngine.screenHeight);
 		//buffer = new ScreenBuffer(bufferSize, new TextCharacter(' ', TextColor.ANSI.BLACK, TextColor.ANSI.BLACK));
 		//emptyCharacter = new TextCharacter(' ', TextColor.ANSI.BLACK, TextColor.ANSI.BLACK);
-		buffer = new PScreen(_p, new PTerminal(_p, 32, 32));
+		buffer = new PScreen(_p, new PTerminal(_p, _p.screenWidth, _p.screenHeight));
 		
 		paragraphs = new ArrayDeque<Paragraph>();
 
@@ -128,7 +128,7 @@ public class DescriptiveTextSystem extends BaseSystem { // This is for terrain o
 		screen.fill(emptyCharacter);
 		screen.noStroke();
 		screen.rect(screen.terminal.resX/2, 0, screen.terminal.resX/2, screen.terminal.resY);
-		screen.image(buffer, 32, 0);
+		screen.image(buffer, _p.screenWidth, 0);
 	}
 	
 	private void setCharacter(int x, int y, PTile tile) {

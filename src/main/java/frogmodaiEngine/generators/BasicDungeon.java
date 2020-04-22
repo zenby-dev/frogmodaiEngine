@@ -311,7 +311,7 @@ public class BasicDungeon {
 
 		FrogmodaiEngine.worldManager.creatureBuilder.player(chunk, 3, 3);
 		FrogmodaiEngine.worldManager.setRenderingPerspective(FrogmodaiEngine.playerID);
-		FrogmodaiEngine.worldManager.creatureBuilder.camera(FrogmodaiEngine.playerID, 0, 0, 32, 32, 14);
+		FrogmodaiEngine.worldManager.creatureBuilder.camera(FrogmodaiEngine.playerID, 0, 0, FrogmodaiEngine.screenWidth, FrogmodaiEngine.screenHeight, 14);
 		int numGoblins = 0;
 		for (int i = 0; i < numGoblins; i++) {
 			FrogmodaiEngine.worldManager.creatureBuilder.goblin(chunk, r.nextInt(chunk.width), r.nextInt(chunk.height));

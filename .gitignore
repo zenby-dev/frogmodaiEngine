@@ -63,3 +63,5 @@ story/040820 01
 planning/03 21 20
 /.gradle/
 /build/
+*.tar
+*.prefs

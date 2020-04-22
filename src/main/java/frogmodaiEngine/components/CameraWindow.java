@@ -3,9 +3,11 @@ package frogmodaiEngine.components;
 import com.artemis.Component;
 import com.artemis.annotations.EntityId;
 
+import frogmodaiEngine.FrogmodaiEngine;
+
 public class CameraWindow extends Component {
-	public int width = 32;
-	public int height = 32;
+	public int width = FrogmodaiEngine.screenWidth;
+	public int height = FrogmodaiEngine.screenHeight;
 	@EntityId public int focus;
 	public int tolerance;
 }
